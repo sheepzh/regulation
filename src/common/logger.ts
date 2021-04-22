@@ -1,0 +1,1 @@
+let LOG_OPEN = false

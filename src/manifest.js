@@ -7,7 +7,7 @@
 const { version, author, homepage } = require('../package.json')
 module.exports = {
     name: '相关法律法规',
-    description: "文本在场，屏蔽你不想看见的词",
+    description: "谁还没点精神洁癖咋滴？",
     version,
     author,
     homepage_url: homepage,

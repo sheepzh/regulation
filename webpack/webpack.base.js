@@ -1,7 +1,6 @@
 const path = require('path')
 const GenerateJsonPlugin = require('generate-json-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
-const VueLoaderPlugin = require('vue-loader-plugin')
 
 // Generate json files 
 const manifest = require('../src/manifest')
@@ -10,7 +9,6 @@ const generateJsonPlugins = [new GenerateJsonPlugin('manifest.json', manifest)]
 const optionGenerator = (outputPath, manifestHooker) => {
     manifestHooker && manifestHooker(manifest)
     const plugins = [
-        new VueLoaderPlugin(),
         ...generateJsonPlugins,
         // copy static resources
         new CopyWebpackPlugin({
@@ -22,8 +20,8 @@ const optionGenerator = (outputPath, manifestHooker) => {
     return {
         entry: {
             content_scripts: './src/content-script.ts',
-            popup: './src/popup/main.js',
-            app: './src/app/main.js'
+            popup: './src/popup/main',
+            app: './src/app/main'
         },
         output: {
             filename: '[name].js',
@@ -32,17 +30,19 @@ const optionGenerator = (outputPath, manifestHooker) => {
         module: {
             rules: [
                 {
-                    test: /\.tsx?$/,
+                    test: /\.ts$/,
                     exclude: '/node_modules/',
-                    use: ['ts-loader', {
-                        loader: 'ui-component-loader',
-                        options: {
-                            'element-ui': {
-                                'camel2': '-'
-                            }
-                        }
-                    }]
-                }, {
+                    use: ['ts-loader']
+                },
+                {
+                    test: /\.tsx$/,
+                    exclude: '/node_modules/',
+                    use: [
+                        'babel-loader',
+                        'ts-loader'
+                    ]
+                },
+                {
                     test: /\.css$/,
                     use: ["style-loader", "css-loader"],
                 }, {
@@ -53,32 +53,13 @@ const optionGenerator = (outputPath, manifestHooker) => {
                     // exclude: /node_modules/,
                     use: ['url-loader?limit=100000']
                 }, {
-                    test: /\.vue$/,
-                    exclude: /node_modules/,
-                    use: ['vue-loader']
-                }, {
                     test: /\.m?js$/,
                     exclude: /(node_modules)/,
-                    use:
-                    {
-                        loader: 'babel-loader',
-                        options: {
-                            plugins: [
-                                [
-                                    'component', {
-                                        "libraryName": "element-ui",
-                                        "styleLibraryName": "theme-chalk"
-                                    },
-                                    "element-ui"
-                                ]
-                            ]
-                        }
-                    }
                 }
             ]
         },
         resolve: {
-            extensions: [".tsx", '.ts', ".js", '.vue', 'css'],
+            extensions: [".tsx", '.ts', ".js", '.css', '.scss'],
         }
     }
 }
