@@ -1,5 +1,5 @@
 import { App } from 'vue'
-import { createRouter, createWebHashHistory, RouteRecordRaw, RouterView } from 'vue-router'
+import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 
 
 const routes: RouteRecordRaw[] = [
@@ -24,5 +24,4 @@ const router = createRouter({
 
 export default function installRouter(app: App): void {
     app.use(router)
-        .component(RouterView.name, RouterView)
 }

@@ -22,6 +22,7 @@
         "allowSyntheticDefaultImports": true
     },
     "include": [
-        "node_modules/vue-tsx-support/enable-check.d.ts"
+        "./node_modules/vue-tsx-support/enable-check.d.ts",
+        "./src/index.d.ts"
     ]
 }

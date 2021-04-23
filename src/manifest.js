@@ -12,10 +12,18 @@ module.exports = {
     author,
     homepage_url: homepage,
     manifest_version: 2,
+    browser_action: {
+        default_icon: "static/images/icon.png",
+        default_title: "违禁词管理"
+    },
     icons: {
         16: "static/images/icon.png",
         48: "static/images/icon.png",
         128: "static/images/icon.png"
+    },
+    background: {
+        scripts: ['background.js'],
+        persistent: false
     },
     content_scripts: [
         {
@@ -31,9 +39,5 @@ module.exports = {
     permissions: [
         'storage',
         'tabs',
-    ],
-    browser_action: {
-        default_popup: "static/popup.html",
-        default_icon: "static/images/icon.png"
-    }
+    ]
 }

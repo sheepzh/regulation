@@ -19,9 +19,9 @@ const optionGenerator = (outputPath, manifestHooker) => {
     ]
     return {
         entry: {
-            content_scripts: './src/content-script.ts',
-            popup: './src/popup/main',
-            app: './src/app/main'
+            content_scripts: './src/content-script',
+            app: './src/app/main',
+            background: './src/background'
         },
         output: {
             filename: '[name].js',

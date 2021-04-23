@@ -1,5 +1,5 @@
-import "vue-tsx-support/enable-check"
-import "./style/index"
+import 'vue-tsx-support/enable-check'
+import './style/index'
 import { createApp } from 'vue'
 import App from './App'
 import installElement from './element-plus'

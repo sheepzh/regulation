@@ -7,10 +7,8 @@
     "dev": "webpack --mode=development --config=webpack/webpack.dev.js --watch",
     "test": "test"
   },
-  "main": "manifest.js",
   "dependencies": {
     "element-plus": "*",
-    "uuid": "^8.3.2",
     "vue": "^3.0.11",
     "vue-router": "^4.0.6"
   },
