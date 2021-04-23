@@ -173,11 +173,6 @@ export default defineComponent({
   render(_ctx: any) {
     const word = renderWord(_ctx)
     const table = renderTable(_ctx)
-    return (
-      <div style="width:100%; margin-top:20px;">
-        {table}
-        {word}
-      </div>
-    )
+    return h('div', { style: 'width:100%; margin-top:20px;' }, [table, word])
   }
 })

@@ -132,11 +132,6 @@ export default defineComponent({
       )
     }
 
-    return (
-      <div>
-        {tags}
-        {inputArea}
-      </div>
-    )
+    return h('div', [tags, inputArea])
   }
 })
