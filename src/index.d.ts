@@ -18,7 +18,7 @@ declare namespace XGFLFG {
         /**
          * The mask of banned words
          */
-        mask?: string
+        mask: string
     }
 
     /**
@@ -31,34 +31,39 @@ declare namespace XGFLFG {
         name?: string
         remark: string
         enabled?: boolean
+        /**
+         * Unused temporarily 
+         */
         priority?: number
-        domains?: RegExp[]
+        scopes?: Scope[]
         words: any
     }
 
     /**
-     * Parameters for page 
+     * The scope of dictionary
      * 
      * @since 0.0.1
      */
-    export interface PageParam {
-        num: number
-        size: number
+    export interface Scope {
+        /**
+         * The regular expression of scope, which is used to filter by host or url
+         */
+        pattern: string,
+        /**
+         * Type
+         * 
+         * 'host' means that reg tests window.location.host
+         * 
+         * 'url' means that reg tests window.location.href
+         */
+        type: ScopeType,
+        /**
+         * Whether to use regular expression
+         */
+        useReg: boolean
     }
 
-    /**
-     * The result of page query
-     * 
-     * @since 0.0.1
-     */
-    export interface PageResult<T> {
-        /**
-         * Total num
-         */
-        total: number
-        page: PageParam
-        list: T[]
-    }
+    export type ScopeType = 'host' | 'url'
 }
 
 export default XGFLFG

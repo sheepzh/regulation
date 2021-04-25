@@ -11,6 +11,7 @@ import {
 import { defineComponent, h, reactive } from 'vue'
 import XGFLFG from '../../..'
 import Word from './word'
+import Scope from './scope'
 import DictionaryDb from '../../../database/dictionary-db'
 
 const db: DictionaryDb = new DictionaryDb(chrome.storage.local)
@@ -18,6 +19,7 @@ const db: DictionaryDb = new DictionaryDb(chrome.storage.local)
 const align = 'center'
 
 const wordRefName = 'word'
+const scopeRefName = 'scope'
 
 // Operations of table row
 const renderOperationButton = (
@@ -55,7 +57,7 @@ const renderTable = (_ctx: any) => {
       {
         default(data: any) {
           const row: XGFLFG.Dictionary = data.row
-          const full = !row.domains || !row.domains.length
+          const full = !row.scopes || !row.scopes.length
           return h(
             ElTag,
             { type: full ? 'info' : 'primary', size: 'mini' },
@@ -102,7 +104,10 @@ const renderTable = (_ctx: any) => {
               _ctx.$refs[wordRefName] && _ctx.$refs[wordRefName].closeInput()
             }),
             // Scope management
-            renderOperationButton(_ctx, '生效范围', () => { }),
+            renderOperationButton(_ctx, '生效范围', () => {
+              _ctx.current = row
+              _ctx.scopeOpen = true
+            }),
             // Delete
             renderOperationButton(_ctx, '删除', () => {
               ElMessageBox.confirm(
@@ -142,15 +147,28 @@ const renderTable = (_ctx: any) => {
 
 // Word
 const renderWord = (_ctx: any) => {
+  const dict: XGFLFG.Dictionary = _ctx.current
   return h(
     ElDialog,
     {
-      title: '违禁词管理',
+      title: `违禁词管理：${dict.name}`,
       modelValue: _ctx.wordOpen,
       onClosed: () => (_ctx.wordOpen = false)
     },
-    { default: () => h(Word, { ref: wordRefName, dict: _ctx.current }) }
+    { default: () => h(Word, { ref: wordRefName, dict }) }
   )
+}
+
+// Scope
+const renderScope = (_ctx: any) => {
+  const dict: XGFLFG.Dictionary = _ctx.current
+  return h(ElDialog,
+    {
+      title: `生效范围管理：${dict.name}`,
+      modelValue: _ctx.scopeOpen,
+      onClosed: () => (_ctx.scopeOpen = false)
+    },
+    { default: () => h(Scope, { ref: scopeRefName, dict }) })
 }
 
 export default defineComponent({
@@ -159,8 +177,9 @@ export default defineComponent({
     return reactive({
       list: [],
       current: null,
-      wordOpen: false
-    } as { list: XGFLFG.Dictionary[]; current: XGFLFG.Dictionary | null; wordOpen: boolean })
+      wordOpen: false,
+      scopeOpen: false
+    } as { list: XGFLFG.Dictionary[]; current: XGFLFG.Dictionary | null; wordOpen: boolean, scopeOpen: boolean })
   },
   created() {
     this.query()
@@ -171,8 +190,10 @@ export default defineComponent({
     }
   },
   render(_ctx: any) {
-    const word = renderWord(_ctx)
-    const table = renderTable(_ctx)
-    return h('div', { style: 'width:100%; margin-top:20px;' }, [table, word])
+    const children = [renderTable(_ctx)]
+    if (_ctx.current) {
+      children.push(renderScope(_ctx), renderWord(_ctx))
+    }
+    return h('div', { style: 'width:100%; margin-top:20px;' }, children)
   }
 })

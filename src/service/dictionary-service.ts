@@ -1,5 +1,7 @@
 import XGFLFG from '..'
+import { matchScope } from '../common/matcher'
 import DictionaryDb from '../database/dictionary-db'
+
 
 export class DictionaryService {
     db: DictionaryDb
@@ -8,24 +10,23 @@ export class DictionaryService {
         this.db = new DictionaryDb(storage)
     }
 
-    listWordsByHost(host: string, callback: (rows: XGFLFG.BannedWord[]) => void): void {
+    listWordsBy(host: string, href: string, callback: (rows: XGFLFG.BannedWord[]) => void): void {
         const afterListAll = (all: XGFLFG.Dictionary[]) => {
             all = all
                 .filter(dict => !!dict.enabled)
                 .filter(dict => {
-                    const domains: RegExp[] = dict.domains || []
+                    const scopes: XGFLFG.Scope[] = dict.scopes || []
                     // No domain, means all
-                    if (!domains || !domains.length) return true
+                    if (!scopes.length) return true
 
-                    for (const index in domains) {
-                        const domain = domains[index]
-                        if (domain.test(host)) {
+                    for (const index in scopes) {
+                        const scope = scopes[index]
+                        if (matchScope(scope, host, href)) {
                             return true
                         }
                     }
                     return false
                 })
-                .sort((a, b) => (a.priority || 0) - (b.priority || 0))
             const result: XGFLFG.BannedWord[] = []
             const exists = new Set()
             all.forEach(dict => {

@@ -3,13 +3,10 @@ import { DictionaryService } from './service/dictionary-service'
 
 const service = new DictionaryService(chrome.storage.local)
 
-let words: XGFLFG.BannedWord[] = []
-
-const host = window.location.host
 
 const config: MutationObserverInit = { attributes: false, childList: true, subtree: true }
 
-const documentObserver = new MutationObserver((records: MutationRecord[], _observer) => {
+const generateDocumentObserver = (words: XGFLFG.BannedWord[]) => new MutationObserver((records: MutationRecord[], _observer) => {
     records.forEach(record => {
         const addedNodes = record.addedNodes
         addedNodes.forEach(node => {
@@ -33,11 +30,14 @@ const documentObserver = new MutationObserver((records: MutationRecord[], _obser
     })
 })
 
+const host = window.location.host
+const href = window.location.href
 
-service.listWordsByHost(host, rows => {
-    words = rows
+service.listWordsBy(host, href, words => {
     if (words.length) {
-        documentObserver.observe(document, config)
+        const observer = generateDocumentObserver(words)
+        observer.observe(document, config)
+        window.onunload = observer.disconnect
         console.log('根据相关法律法规，将审核并替换敏感词')
     } else {
         console.log('根据相关法律法规，该网站不需要审核敏感词')
