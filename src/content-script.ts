@@ -1,12 +1,11 @@
 import XGFLFG from '.'
-import { getRealMask } from './common/default-word'
 import { DictionaryService } from './service/dictionary-service'
 
 const service = new DictionaryService(chrome.storage.local)
 
 let words: XGFLFG.BannedWord[] = []
 
-service.listWordsByHost(window.location.host, rows => words = rows)
+const host = window.location.host
 
 const config: MutationObserverInit = { attributes: false, childList: true, subtree: true }
 
@@ -17,21 +16,15 @@ const documentObserver = new MutationObserver((records: MutationRecord[], _obser
             if (node instanceof HTMLElement) {
                 const element = node as HTMLElement
                 if (element.tagName === 'IFRAME') {
-                    const iframe = element as HTMLIFrameElement
-                    iframe.onload = _ => {
-                        const document = iframe.contentDocument || (iframe.contentWindow && iframe.contentWindow.document)
-                        console.log(document)
-                        if (document !== null) {
-                            documentObserver.observe(document, config)
-                        }
-                    }
-
+                    // Skip when <iframe>
+                    // Because this file will be injected by browser with true of 'all_frames' in manifest.json
+                    return
                 }
+
                 words.forEach(word => {
                     const { origin, mask } = word
                     if (element.innerText.includes(origin)) {
-                        const realMask = getRealMask(origin, mask)
-                        const html = element.innerHTML.replace(origin, realMask)
+                        const html = element.innerHTML.replace(origin, mask)
                         element.innerHTML = html
                     }
                 })
@@ -40,4 +33,15 @@ const documentObserver = new MutationObserver((records: MutationRecord[], _obser
     })
 })
 
-documentObserver.observe(document, config)
+
+service.listWordsByHost(host, rows => {
+    words = rows
+    if (words.length) {
+        documentObserver.observe(document, config)
+        console.log('根据相关法律法规，将审核并替换敏感词')
+    } else {
+        console.log('根据相关法律法规，该网站不需要审核敏感词')
+    }
+})
+
+window.onload = () => console.log(document.title)

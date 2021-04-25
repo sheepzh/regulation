@@ -11,6 +11,7 @@ export class DictionaryService {
     listWordsByHost(host: string, callback: (rows: XGFLFG.BannedWord[]) => void): void {
         const afterListAll = (all: XGFLFG.Dictionary[]) => {
             all = all
+                .filter(dict => !!dict.enabled)
                 .filter(dict => {
                     const domains: RegExp[] = dict.domains || []
                     // No domain, means all

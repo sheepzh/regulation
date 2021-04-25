@@ -42,7 +42,7 @@ const renderTable = (_ctx: any) => {
       align,
       minWidth: 40,
       label: '词汇数量',
-      formatter: (row: XGFLFG.Dictionary) => row.words.size
+      formatter: (row: XGFLFG.Dictionary) => Object.values(row.words).length || 0
     }),
     // Scope of domain
     h(
@@ -102,11 +102,11 @@ const renderTable = (_ctx: any) => {
               _ctx.$refs[wordRefName] && _ctx.$refs[wordRefName].closeInput()
             }),
             // Scope management
-            renderOperationButton(_ctx, '生效范围', () => {}),
+            renderOperationButton(_ctx, '生效范围', () => { }),
             // Delete
             renderOperationButton(_ctx, '删除', () => {
               ElMessageBox.confirm(
-                `是否删除词典【${row.name}】？`,
+                `是否删除词典[${row.name}]？`,
                 '操作提示',
                 {
                   cancelButtonText: '放弃',

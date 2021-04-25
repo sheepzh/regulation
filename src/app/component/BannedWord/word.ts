@@ -1,6 +1,6 @@
 import { defineComponent, h, reactive } from 'vue'
-import { ElButton, ElInput, ElMessage, ElTag } from 'element-plus'
-import { getRealMask } from '../../../common/default-word'
+import { ElButton, ElInput, ElMessage, ElMessageBox, ElTag } from 'element-plus'
+import { getDefaultMask, getRealMask } from '../../../common/default-word'
 import './style/word'
 import BannedWordDb from '../../../database/dictionary-db'
 import XGFLFG from '../../..'
@@ -12,6 +12,42 @@ interface Props {
 }
 
 const db = new BannedWordDb(chrome.storage.local)
+
+/**
+ * Save word
+ * 
+ * If exists, rewrite or give up, Or add new one
+ * 
+ * @param _ctx vm
+ */
+const saveWord = (_ctx: any) => {
+  const origin = _ctx.formData.origin
+  const words = _ctx.dict.words
+  if (!origin) {
+    ElMessage.error('未填写敏感词')
+    return
+  }
+
+  const current = { origin, mask: getRealMask(origin, _ctx.formData.mask) }
+
+  const update = () => {
+    words[origin] = current
+    db.update(_ctx.dict).then(() => {
+      _ctx.formData.origin = _ctx.formData.mask = ''
+      _ctx.$refs.originInput.focus()
+    })
+  }
+
+  const existing = words[origin]
+  if (existing) {
+    ElMessageBox.confirm(
+      `敏感词[${origin}]已存在，是否将原安全词[${existing.mask}]替换成[${current.mask}]?`, '操作提示', { confirmButtonText: '替换', cancelButtonText: '放弃' }
+    ).then(update)
+      .catch(() => ElMessage.info("取消保存"))
+  } else {
+    update()
+  }
+}
 
 export default defineComponent({
   props: {
@@ -27,11 +63,16 @@ export default defineComponent({
       formData: { origin: '', mask: '' }
     } as Props)
   },
+  computed: {
+    maskPlaceholder(_ctx: any) {
+      return getDefaultMask(_ctx.formData.origin)
+    }
+  },
   methods: {
     delete(origin: string) {
       db.update(this.dict).then(() => {
         delete this.dict.words[origin]
-        ElMessage.success(`违禁词【${origin}】删除成功！`)
+        ElMessage.success(`违禁词[${origin}]删除成功！`)
       })
     },
     closeInput() {
@@ -69,6 +110,7 @@ export default defineComponent({
           placeholder: '敏感词',
           clearable: true,
           size: 'mini',
+          ref: 'originInput',
           onClear: () => (_ctx.formData.origin = _ctx.formData.mask = ''),
           class: 'word-input-left',
           onInput: (val: string) => (_ctx.formData.origin = val.trim())
@@ -82,7 +124,13 @@ export default defineComponent({
             size: 'mini',
             onClear: () => (_ctx.formData.mask = ''),
             class: 'word-input-right ',
-            onInput: (val: string) => (_ctx.formData.mask = val.trim())
+            onInput: (val: string) => (_ctx.formData.mask = val.trim()),
+            onKeyup: (event: KeyboardEvent) => {
+              if (event.key === "Enter") {
+                // Enter
+                saveWord(_ctx)
+              }
+            }
           },
           {
             append: () =>
@@ -90,26 +138,7 @@ export default defineComponent({
                 h(ElButton, {
                   icon: 'el-icon-check',
                   size: 'mini',
-                  onClick: () => {
-                    const origin = _ctx.formData.origin
-                    const words = _ctx.dict.words
-                    if (!origin) {
-                      ElMessage.error('未填写敏感词')
-                      return
-                    }
-                    const existing = Object.keys(words).includes(origin)
-                    if (existing) {
-                      console.log(words, origin)
-                      ElMessage.error(
-                        '该敏感词已存在，需要修改安全词，请先删除原来的记录'
-                      )
-                      return
-                    }
-                    words[origin] = { origin, mask: _ctx.formData.mask }
-                    db.update(_ctx.dict).then(() => {
-                      _ctx.formData.origin = _ctx.formData.mask = ''
-                    })
-                  }
+                  onClick: () => saveWord(_ctx)
                 }),
                 h(ElButton, {
                   icon: 'el-icon-close',

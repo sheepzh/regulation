@@ -33,7 +33,8 @@ module.exports = {
             "js": [
                 "content_scripts.js"
             ],
-            "run_at": "document_start"
+            "run_at": "document_start",
+            "all_frames": true
         }
     ],
     permissions: [
