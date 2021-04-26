@@ -108,6 +108,8 @@ const renderTable = (_ctx: any) => {
               _ctx.current = row
               _ctx.scopeOpen = true
             }),
+            // Edit
+            renderOperationButton(_ctx, '编辑', () => _ctx.$emit('edit', row)),
             // Delete
             renderOperationButton(_ctx, '删除', () => {
               ElMessageBox.confirm(
@@ -183,6 +185,7 @@ export default defineComponent({
       scopeOpen: false
     } as { list: XGFLFG.Dictionary[]; current: XGFLFG.Dictionary | null; wordOpen: boolean, scopeOpen: boolean })
   },
+  emits: ['edit'],
   created() {
     this.query()
   },

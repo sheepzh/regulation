@@ -1,7 +1,7 @@
 import { ElButton } from 'element-plus'
 import { defineComponent, h, reactive, Ref, ref } from 'vue'
 import ListTable from './list-table'
-import DictAdd from './dict-add'
+import DictEdit from './dict-edit'
 import XGFLFG from '../../..'
 
 interface Props {
@@ -24,16 +24,16 @@ export default defineComponent({
         size: 'small',
         type: 'primary',
         icon: 'el-icon-plus',
-        onClick: () => _ctx.$refs.add.open()
+        onClick: () => _ctx.$refs.edit.add()
       },
       { default: () => '新增词典' }
     )
 
     const children = [
       h('div', { class: 'filter-container' }, [addButton]),
-      h(ListTable, { ref: 'table' }),
-      h(DictAdd, {
-        ref: 'add',
+      h(ListTable, { ref: 'table', onEdit: (row: XGFLFG.Dictionary) => { _ctx.$refs.edit.edit(row) } }),
+      h(DictEdit, {
+        ref: 'edit',
         onSaved: () => _ctx.$refs.table.query()
       })
     ]

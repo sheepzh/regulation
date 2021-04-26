@@ -1,4 +1,4 @@
-import { defineComponent, h, reactive, unref } from 'vue'
+import { defineComponent, h, reactive } from 'vue'
 import { ElButton, ElDialog, ElInput, ElMessage } from 'element-plus'
 import './style/dict-add'
 import XGFLFG from '../../..'
@@ -7,14 +7,22 @@ import DictionaryDb from '../../../database/dictionary-db'
 interface Props {
   isOpen: boolean
   formData: XGFLFG.Dictionary
+  title: string
 }
 
 const db: DictionaryDb = new DictionaryDb(chrome.storage.local)
 
 export default defineComponent({
+  name: 'dict-edit',
   emits: ['saved'],
   methods: {
-    open() {
+    add() {
+      this.title = '新增违禁词词典'
+      this.isOpen = true
+    },
+    edit(row: XGFLFG.Dictionary) {
+      this.title = '编辑违禁词词典'
+      this.formData = row
       this.isOpen = true
     },
     save() {
@@ -22,9 +30,12 @@ export default defineComponent({
       if (!data.name) {
         ElMessage.error('词典名称不能为空')
       } else {
-        db.add(unref(data)).then(() => {
-          ElMessage.success('新增成功')
-          this.$emit('saved', data)
+        // Update if ID exists, or add it
+        const toDo: (dict: XGFLFG.Dictionary) => Promise<void> = data.id ? data => db.update(data) : data => db.add(data)
+
+        toDo(data).then(() => {
+          ElMessage.success(data.id ? '修改成功' : '新增成功'),
+            this.$emit('saved', data)
 
           // Clear all the form items
           this.formData.name = this.formData.remark = ''
@@ -39,7 +50,8 @@ export default defineComponent({
       formData: {
         name: '',
         remark: ''
-      }
+      },
+      title: '',
     } as Props)
   },
   render(_ctx: any) {
@@ -90,7 +102,7 @@ export default defineComponent({
     return h(
       ElDialog,
       {
-        title: '新增违禁词词典',
+        title: _ctx.title,
         closeOnClickModal: false,
         width: 400,
         modelValue: _ctx.isOpen,
