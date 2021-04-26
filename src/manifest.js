@@ -38,7 +38,6 @@ module.exports = {
         }
     ],
     permissions: [
-        'storage',
-        'tabs',
+        'storage'
     ]
 }
