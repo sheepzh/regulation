@@ -35,7 +35,7 @@ declare namespace XGFLFG {
          * Unused temporarily 
          */
         priority?: number
-        scopes?: Scope[]
+        scopes?: any
         words: any
     }
 

@@ -30,7 +30,7 @@ const renderOperationButton = (
   return h(
     ElButton,
     { type: 'text', size: 'mini', onClick: callback },
-    { default: () => name }
+    () => name
   )
 }
 
@@ -57,7 +57,7 @@ const renderTable = (_ctx: any) => {
       {
         default(data: any) {
           const row: XGFLFG.Dictionary = data.row
-          const full = !row.scopes || !row.scopes.length
+          const full = !row.scopes || !Object.values(row.scopes).length
           return h(
             ElTag,
             { type: full ? 'info' : 'primary', size: 'mini' },
@@ -153,6 +153,7 @@ const renderWord = (_ctx: any) => {
     {
       title: `违禁词管理：${dict.name}`,
       modelValue: _ctx.wordOpen,
+      destroyOnClose: true,
       onClosed: () => (_ctx.wordOpen = false)
     },
     { default: () => h(Word, { ref: wordRefName, dict }) }
@@ -166,6 +167,7 @@ const renderScope = (_ctx: any) => {
     {
       title: `生效范围管理：${dict.name}`,
       modelValue: _ctx.scopeOpen,
+      destroyOnClose: true,
       onClosed: () => (_ctx.scopeOpen = false)
     },
     { default: () => h(Scope, { ref: scopeRefName, dict }) })

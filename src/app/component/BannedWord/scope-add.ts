@@ -5,6 +5,30 @@ import XGFLFG from '../../..'
 
 const inputRef = 'scopeInput'
 
+const save = (_ctx: any) => {
+  const useReg = _ctx.useReg
+  const pattern = _ctx.pattern
+  const type = _ctx.type
+  if (!pattern) {
+    ElMessage.error('未输入网址或域名')
+    _ctx.$refs[inputRef].focus()
+    return
+  }
+  if (useReg) {
+    // Check the regular expression is valid
+    try {
+      new RegExp(pattern)
+    } catch (e) {
+      ElMessage.error('无效的正则表达式')
+      _ctx.$refs[inputRef].focus()
+      return
+    }
+  }
+  _ctx.$emit('saved', { useReg, pattern, type } as XGFLFG.Scope)
+  _ctx.pattern = ''
+  _ctx.$refs[inputRef].focus()
+}
+
 export default defineComponent({
   name: 'dict-scope-add',
   setup() {
@@ -43,27 +67,7 @@ export default defineComponent({
       ElButton,
       {
         icon: 'el-icon-plus',
-        onClick: () => {
-          const useReg = _ctx.useReg
-          const pattern = _ctx.pattern
-          const type = _ctx.type
-          if (!pattern) {
-            ElMessage.error('未输入网址或域名')
-            _ctx.$refs[inputRef].focus()
-            return
-          }
-          if (useReg) {
-            // Check the regular expression is valid
-            try {
-              new RegExp(pattern)
-            } catch (e) {
-              ElMessage.error('无效的正则表达式')
-              _ctx.$refs[inputRef].focus()
-              return
-            }
-          }
-          _ctx.$emit('saved', { useReg, pattern, type } as XGFLFG.Scope)
-        }
+        onClick: () => save(_ctx)
       },
       { default: () => '新增' }
     )
@@ -81,11 +85,12 @@ export default defineComponent({
         class: 'scope-input',
         clearable: true,
         onInput: updatePattern,
+        onKeyup: (event: KeyboardEvent) => event.code === 'Enter' && save(_ctx),
         onClear: () => updatePattern(''),
       },
       {
         prepend: () => typeSelect,
-        append: () => [pasteButton, saveButton]
+        append: () => [saveButton, pasteButton]
       }
     )
     return h(ElRow, { gutter: 20 },

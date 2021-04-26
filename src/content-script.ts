@@ -3,29 +3,32 @@ import { DictionaryService } from './service/dictionary-service'
 
 const service = new DictionaryService(chrome.storage.local)
 
-
 const config: MutationObserverInit = { attributes: false, childList: true, subtree: true }
+
+const ignoredTags = ['SCRIPT', 'LINK', 'STYLE', 'IFRAME', 'IMG', 'INPUT']
 
 const generateDocumentObserver = (words: XGFLFG.BannedWord[]) => new MutationObserver((records: MutationRecord[], _observer) => {
     records.forEach(record => {
         const addedNodes = record.addedNodes
         addedNodes.forEach(node => {
-            if (node instanceof HTMLElement) {
-                const element = node as HTMLElement
-                if (element.tagName === 'IFRAME') {
-                    // Skip when <iframe>
-                    // Because this file will be injected by browser with true of 'all_frames' in manifest.json
-                    return
-                }
-
-                words.forEach(word => {
-                    const { origin, mask } = word
-                    if (element.innerText.includes(origin)) {
-                        const html = element.innerHTML.replace(origin, mask)
-                        element.innerHTML = html
-                    }
-                })
+            if (!(node instanceof HTMLElement)) {
+                return
             }
+            const ele = node as HTMLElement
+            if (ele.childElementCount) {
+                // Only replace texts of leaf element
+                return
+            }
+            if (ignoredTags.includes(ele.tagName)) {
+                return
+            }
+
+            let innerHtml = ele.innerHTML
+            words.forEach(word => {
+                const { origin, mask } = word
+                innerHtml = innerHtml.replace(origin, mask)
+            })
+            ele.innerHTML = innerHtml
         })
     })
 })

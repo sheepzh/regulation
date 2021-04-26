@@ -1,7 +1,6 @@
 
 import { ElAlert, ElInput, ElCol, ElRow, ElButton } from "element-plus"
 import { defineComponent, h, reactive, VNode } from "vue"
-import XGFLFG from "../../.."
 import { read as readClipboard } from 'clipboardy'
 import { matchScope } from "../../../common/matcher"
 import Url from 'url-parse'
@@ -17,13 +16,16 @@ interface TestResult {
 }
 
 interface Props {
-  targetUrl: '',
-  scopes: XGFLFG.Scope[]
+  targetUrl: string,
+  scopes: any
 }
 export default defineComponent({
   name: 'word-scope',
+  props: {
+    scopes: { type: Object, required: true }
+  },
   setup(_props: any) {
-    const scopes = (_props.scope || {}) as XGFLFG.Scope[]
+    const scopes = _props.scopes || {}
 
     return reactive({
       targetUrl: '',
@@ -33,12 +35,12 @@ export default defineComponent({
   },
   methods: {
     test(): TestResult {
-      const scopes = this.scopes as XGFLFG.Scope[]
-      if (!scopes || !scopes.length) {
+      const scopes = this.scopes
+      if (!scopes || !Object.values(scopes).length) {
         return { type: 'success', msg: '字典有效，未指定范围。' }
       }
       const url = this.targetUrl
-      if (!!url) {
+      if (!url) {
         return { type: 'info', msg: '请输入待测试网址' }
       }
       const host = url2Host(url)
@@ -72,6 +74,7 @@ export default defineComponent({
                 clearable: true,
                 placeholder: '输入网址判断词典是否生效：https://www.baidu.com/?q=xxx',
                 onInput: updateTargetUrl,
+                onKeyup: (event: KeyboardEvent) => event.code === 'Enter' && (_ctx.testResult = _ctx.test()),
                 onClear: () => updateTargetUrl('')
               },
               // Button to paste

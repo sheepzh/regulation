@@ -15,12 +15,12 @@ export class DictionaryService {
             all = all
                 .filter(dict => !!dict.enabled)
                 .filter(dict => {
-                    const scopes: XGFLFG.Scope[] = dict.scopes || []
+                    const scopes = Object.values(dict.scopes)
                     // No domain, means all
                     if (!scopes.length) return true
 
-                    for (const index in scopes) {
-                        const scope = scopes[index]
+                    for (const key in scopes) {
+                        const scope = scopes[key] as XGFLFG.Scope
                         if (matchScope(scope, host, href)) {
                             return true
                         }
