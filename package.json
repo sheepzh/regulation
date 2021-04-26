@@ -1,10 +1,11 @@
 {
   "name": "regulation",
   "version": "0.0.1",
-  "description": "人人都是夹总",
+  "description": "想夹谁就夹谁？",
   "author": "sheepzh",
   "scripts": {
     "dev": "webpack --mode=development --config=webpack/webpack.dev.js --watch",
+    "build": "webpack --mode=production --config=webpack/webpack.prod.js",
     "test": "jest",
     "test-c": "jest --converage"
   },
@@ -45,7 +46,8 @@
   },
   "homepage": "https://github.com/sheepzh/regulation#readme",
   "keywords": [
-    "夹总"
+    "相关法律法规",
+    "敏感词"
   ],
   "license": "MIT",
   "repository": {
