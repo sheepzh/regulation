@@ -15,8 +15,9 @@ export class DictionaryService {
             all = all
                 .filter(dict => !!dict.enabled)
                 .filter(dict => {
-                    const scopes = Object.values(dict.scopes)
                     // No domain, means all
+                    if (!dict.scopes) return true
+                    const scopes = Object.values(dict.scopes)
                     if (!scopes.length) return true
 
                     for (const key in scopes) {
