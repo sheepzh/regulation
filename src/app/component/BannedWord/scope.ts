@@ -22,7 +22,10 @@ export default defineComponent({
     }
   },
   setup(_prop: any) {
-    const dict = _prop.dict as XGFLFG.Dictionary || {}
+    const dict = (_prop.dict || {}) as XGFLFG.Dictionary
+    if (!dict.scopes) {
+      dict.scopes = {}
+    }
     return reactive({
       dict
     } as Props)

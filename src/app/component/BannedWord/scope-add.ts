@@ -58,7 +58,7 @@ export default defineComponent({
     const useRegSwitch = () => h(ElTooltip,
       {
         content: "是否启用正则匹配？",
-        placement: "right",
+        placement: "left",
       },
       { default: () => h(ElSwitch, { modelValue: _ctx.useReg, onChange: (val: boolean) => _ctx.useReg = val }) }
     )
