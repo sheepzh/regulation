@@ -21,6 +21,18 @@ declare namespace XGFLFG {
         mask: string
     }
 
+    export interface BannedWordUseReg {
+        /**
+         * The origin word which is excpected to be banned
+         */
+        origin: RegExp
+
+        /**
+         * The mask of banned words
+         */
+        mask: string
+    }
+
     /**
      * Dictionary
      * 
