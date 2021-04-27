@@ -24,6 +24,13 @@ const canMerge = (left: Node, right: Node) => {
         if (lAttr.length !== rAttr.length) {
             return false
         }
+        for (let key in lAttr) {
+            const rA = rAttr.getNamedItem(key)
+            if (!rA) return false
+            const lA = lAttr.getNamedItem(key)
+            if (!lA) return false
+            if (lA.value !== rA.value) return false
+        }
     }
     return true
 }
