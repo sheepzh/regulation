@@ -1,5 +1,5 @@
 import XGFLFG from '.'
-import replace, { replaceWithWords } from './replace/replacer'
+import replace, { replaceWithWords } from './resolver/replacer'
 import { DictionaryService } from './service/dictionary-service'
 
 const service = new DictionaryService(chrome.storage.local)
