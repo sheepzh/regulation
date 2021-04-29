@@ -23,7 +23,7 @@ class _Replacer {
             if (child.nodeName === '#text') {
                 const origin = child.nodeValue
                 if (!origin) {
-                    return
+                    continue
                 }
                 const replaced = this.replaceWithWords(origin, words)
                 if (origin !== replaced) {

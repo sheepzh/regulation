@@ -38,8 +38,7 @@ export default function generate(context: Context): Element {
                     continue
                 }
                 const nodeVal = text === SHOW ? context.getOrigin(nodeKey, i) : context.getReplaced(nodeKey, i)
-                if (!nodeVal) return
-                childNode.nodeValue = nodeVal
+                nodeVal && (childNode.nodeValue = nodeVal)
             }
         })
     }
