@@ -100,7 +100,12 @@ export default defineComponent({
         { default: () => `${origin} => ${getRealMask(origin, mask)}` }
       )
     })
-
+    const saveEnterKey = (event: KeyboardEvent) => {
+      if (event.key === "Enter") {
+        // Enter
+        saveWord(_ctx)
+      }
+    }
     let inputArea: any
     if (_ctx.isAdding) {
       inputArea = []
@@ -113,7 +118,8 @@ export default defineComponent({
           ref: 'originInput',
           onClear: () => (_ctx.formData.origin = _ctx.formData.mask = ''),
           class: 'word-input-left',
-          onInput: (val: string) => (_ctx.formData.origin = val.trim())
+          onInput: (val: string) => (_ctx.formData.origin = val.trim()),
+          onKeyup: saveEnterKey
         }),
         h(
           ElInput,
@@ -125,12 +131,7 @@ export default defineComponent({
             onClear: () => (_ctx.formData.mask = ''),
             class: 'word-input-right ',
             onInput: (val: string) => (_ctx.formData.mask = val.trim()),
-            onKeyup: (event: KeyboardEvent) => {
-              if (event.key === "Enter") {
-                // Enter
-                saveWord(_ctx)
-              }
-            }
+            onKeyup: saveEnterKey
           },
           {
             append: () =>
