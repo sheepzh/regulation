@@ -70,8 +70,8 @@ export default defineComponent({
   },
   methods: {
     delete(origin: string) {
+      delete this.dict.words[origin]
       db.update(this.dict).then(() => {
-        delete this.dict.words[origin]
         ElMessage.success(`违禁词[${origin}]删除成功！`)
       })
     },
