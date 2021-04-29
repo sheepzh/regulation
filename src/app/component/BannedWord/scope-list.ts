@@ -8,13 +8,18 @@ export default defineComponent({
     scopes: {
       type: Object,
       required: true
+    },
+    tooltipEffect: {
+      type: String
     }
   },
   emits: ['deleted'],
   setup(_props: any) {
     const scopes = _props.scopes
+    const tooltipEffect = _props.tooltipEffect || 'dark'
     return reactive({
-      scopes
+      scopes,
+      tooltipEffect
     })
   },
   render(_ctx: any) {
@@ -30,7 +35,8 @@ export default defineComponent({
       const tooltip = h(ElTooltip,
         {
           content: `${scope.type === 'url' ? '网址' : '域名'}${scope.useReg ? '(使用正则)' : ''}`,
-          placement: 'bottom'
+          placement: 'bottom',
+          effect: _ctx.tooltipEffect
         },
         () => h(ElTag, tagType, () => [i, scope.pattern])
       )

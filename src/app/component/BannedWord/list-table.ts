@@ -6,13 +6,15 @@ import {
   ElTag,
   ElMessageBox,
   ElMessage,
-  ElDialog
+  ElDialog,
+  ElTooltip
 } from 'element-plus'
 import { defineComponent, h, reactive } from 'vue'
 import XGFLFG from '../../..'
 import Word from './word'
 import Scope from './scope'
 import DictionaryDb from '../../../database/dictionary-db'
+import ScopeList from './scope-list'
 
 const db: DictionaryDb = new DictionaryDb(chrome.storage.local)
 
@@ -58,11 +60,15 @@ const renderTable = (_ctx: any) => {
         default(data: any) {
           const row: XGFLFG.Dictionary = data.row
           const full = !row.scopes || !Object.values(row.scopes).length
-          return h(
+
+          const tag = () => h(
             ElTag,
             { type: full ? 'info' : 'primary', size: 'mini' },
             { default: () => (full ? '全部网站' : '部分网站') }
           )
+          const content = () => h(ScopeList, { scopes: row.scopes || {}, tooltipEffect: 'light' })
+
+          return full ? tag() : h(ElTooltip, { placement: 'top', effect: 'light' }, { default: tag, content })
         }
       }
     ),

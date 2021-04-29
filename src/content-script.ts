@@ -1,4 +1,5 @@
 import XGFLFG from '.'
+import filter from './resolver/filter'
 import replace, { replaceWithWords } from './resolver/replacer'
 import { DictionaryService } from './service/dictionary-service'
 
@@ -15,19 +16,23 @@ const generateDocumentObserver = (words: XGFLFG.BannedWordUseReg[]) => {
 const host = window.location.host
 const href = window.location.href
 
-service.listWordsBy(host, href, words => {
-    if (words.length) {
+if (filter(host, href)) {
+    console.log('该网址不在相关法律法规管辖范围之内')
+} else {
+    service.listWordsBy(host, href, words => {
+        if (words.length) {
 
-        const regWords: XGFLFG.BannedWordUseReg[] = words
-            .map(word => {
-                return { origin: new RegExp(word.origin.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')), mask: word.mask }
-            })
+            const regWords: XGFLFG.BannedWordUseReg[] = words
+                .map(word => {
+                    return { origin: new RegExp(word.origin.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')), mask: word.mask }
+                })
 
-        document.title = replaceWithWords(document.title, regWords)
-        const observer = generateDocumentObserver(regWords)
+            document.title = replaceWithWords(document.title, regWords)
+            const observer = generateDocumentObserver(regWords)
 
-        observer.observe(document, config)
-        window.onunload = observer.disconnect
-        console.log('根据相关法律法规，将审核并替换敏感词')
-    }
-})
+            observer.observe(document, config)
+            window.onunload = observer.disconnect
+            console.log('根据相关法律法规，将审核并替换敏感词')
+        }
+    })
+}

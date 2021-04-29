@@ -17,7 +17,6 @@ function replaceChildren(node: Node, words: XGFLFG.BannedWordUseReg[]) {
     })
 }
 
-
 export default function replace(node: Node, words: XGFLFG.BannedWordUseReg[]) {
     mergeChildren(node)
 
