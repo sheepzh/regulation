@@ -28,7 +28,7 @@ if (filter(host, href)) {
 
             const regWords: XGFLFG.BannedWordUseReg[] = words
                 .map(word => {
-                    return { origin: new RegExp(word.origin.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')), mask: word.mask }
+                    return { origin: new RegExp(word.origin.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'), 'g'), mask: word.mask }
                 })
 
             document.title = replacer.replaceWithWords(document.title, regWords)
