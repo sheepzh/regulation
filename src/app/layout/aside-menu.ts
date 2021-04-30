@@ -18,6 +18,14 @@ export default defineComponent({
           onClick: () => _ctx.changeRoute('/banned-word')
         },
         () => h('span', { class: 'non-selected' }, '违禁词管理')
+      ),
+      h(
+        ElMenuItem,
+        {
+          index: '/setting',
+          onClick: () => _ctx.changeRoute('/setting')
+        },
+        () => h('span', { class: 'non-selected' }, '扩展设置')
       )
     ])
   }

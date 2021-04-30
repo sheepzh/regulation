@@ -12,7 +12,7 @@ const routes: RouteRecordRaw[] = [
     },
     {
         path: '/setting',
-        component: () => import('./component/setting')
+        component: () => import('./component/Setting')
     }
 ]
 

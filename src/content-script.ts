@@ -1,4 +1,5 @@
 import XGFLFG from '.'
+import SettingDb from './database/setting-db'
 import Context from './resolver/context'
 import filter from './resolver/filter'
 import replacer from './resolver/replacer'
@@ -6,6 +7,8 @@ import generateSwitcher from './resolver/switcher'
 import { DictionaryService } from './service/dictionary-service'
 
 const service = new DictionaryService(chrome.storage.local)
+
+const settingDb = new SettingDb(chrome.storage.local)
 
 const config: MutationObserverInit = { attributes: false, childList: true, subtree: true }
 
@@ -37,9 +40,13 @@ if (filter(host, href)) {
             observer.observe(document, config)
             window.onunload = observer.disconnect
             console.log('根据相关法律法规，将审核并替换敏感词')
+            settingDb.getVisiblityOfButton().then(val => {
+                if (val) {
+                    const switcher = generateSwitcher(context)
+                    window.onload = () => document.body.append(switcher)
+                }
+            })
 
-            const switcher = generateSwitcher(context)
-            window.onload = () => document.body.append(switcher)
         }
     })
 }

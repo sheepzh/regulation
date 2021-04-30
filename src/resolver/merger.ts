@@ -1,3 +1,4 @@
+import { ORIGIN_TEXT_ATTR_NAME } from "../constant/element"
 
 const mergedTags = ['EM', 'B', 'I', 'U', '#text']
 
@@ -21,13 +22,13 @@ const canMerge = (left: Node, right: Node) => {
     if (left instanceof HTMLElement) {
         const lEle = left as HTMLElement, rEle = right as HTMLElement
         const lAttr = lEle.attributes, rAttr = rEle.attributes
-        if (lAttr.length !== rAttr.length) {
-            return false
-        }
-        for (let key in lAttr) {
-            const rA = rAttr.getNamedItem(key)
+        for (let index in lAttr) {
+            const rA = rAttr[index]
             if (!rA) return false
-            const lA = lAttr.getNamedItem(key)
+            if (rA.name === ORIGIN_TEXT_ATTR_NAME) {
+                continue
+            }
+            const lA = lAttr[index]
             if (!lA) return false
             if (lA.value !== rA.value) return false
         }
