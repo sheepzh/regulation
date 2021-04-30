@@ -35,6 +35,12 @@ if (filter(host, href)) {
                 })
 
             document.title = replacer.replaceWithWords(document.title, regWords)
+
+            if (document.body) {
+                // Resolve static dom nodes
+                document.body.childNodes.forEach(node => replacer.replace(node, regWords, context))
+            }
+            
             const observer = generateDocumentObserver(regWords)
 
             observer.observe(document, config)
