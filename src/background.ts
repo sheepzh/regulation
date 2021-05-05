@@ -1,8 +1,5 @@
-import { IS_FIREFOX } from "./util/constant/environment"
-
 function openAppPage() {
-    // FireFox use 'static' as prefix
-    const url = IS_FIREFOX ? 'app.html' : 'static/app.html'
+    const url = 'static/app.html'
     chrome.tabs.create({ url })
 }
 
