@@ -6,6 +6,7 @@ import ScopeList from './scope-list'
 import './style/scope'
 import { ElMessage, ElSpace } from 'element-plus'
 import DictionaryDb from '../../../database/dictionary-db'
+import { unreactive } from '../../../common/vue3-extent'
 
 const db: DictionaryDb = new DictionaryDb(chrome.storage.local)
 
@@ -43,7 +44,7 @@ export default defineComponent({
               dict.scopes = new Map<string, XGFLFG.Scope>()
             }
             dict.scopes[scope.type + scope.pattern] = scope
-            db.update(dict).then(() => {
+            db.update(unreactive(dict) as XGFLFG.Dictionary).then(() => {
               ElMessage.success('添加成功')
             })
           }

@@ -4,6 +4,7 @@ import { getDefaultMask, getRealMask } from '../../../common/default-word'
 import './style/word'
 import BannedWordDb from '../../../database/dictionary-db'
 import XGFLFG from '../../..'
+import { unreactive } from '../../../common/vue3-extent'
 
 interface Props {
   dict: XGFLFG.Dictionary
@@ -32,7 +33,7 @@ const saveWord = (_ctx: any) => {
 
   const update = () => {
     words[origin] = current
-    db.update(_ctx.dict).then(() => {
+    db.update(unreactive(_ctx.dict) as XGFLFG.Dictionary).then(() => {
       _ctx.formData.origin = _ctx.formData.mask = ''
       _ctx.$refs.originInput.focus()
     })

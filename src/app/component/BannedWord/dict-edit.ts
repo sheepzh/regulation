@@ -3,6 +3,7 @@ import { ElButton, ElDialog, ElInput, ElMessage } from 'element-plus'
 import './style/dict-add'
 import XGFLFG from '../../..'
 import DictionaryDb from '../../../database/dictionary-db'
+import { unreactive } from '../../../common/vue3-extent'
 
 interface Props {
   isOpen: boolean
@@ -26,7 +27,7 @@ export default defineComponent({
       this.isOpen = true
     },
     save() {
-      const data: XGFLFG.Dictionary = this.formData
+      const data: XGFLFG.Dictionary = unreactive(this.formData) as XGFLFG.Dictionary
       if (!data.name) {
         ElMessage.error('词典名称不能为空')
       } else {
