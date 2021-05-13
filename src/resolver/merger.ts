@@ -2,6 +2,11 @@ import { ORIGIN_TEXT_ATTR_NAME } from "../constant/element"
 
 const mergedTags = ['EM', 'B', 'I', 'U', '#text']
 
+const needMerge = () => {
+    const host = window.location.host
+    return ['s.weibo.com'].includes(host)
+}
+
 /**
  * Judge the same format nodes
  * 
@@ -45,6 +50,11 @@ const merge = (left: Node, right: Node) => {
 }
 
 export default function mergeChildren(node: Node): void {
+    // bugfix: #1 https://github.com/sheepzh/regulation/issues/1
+    // Only merge on speficic sites
+    if (!needMerge()) {
+        return
+    }
 
     const children = node.childNodes
 
