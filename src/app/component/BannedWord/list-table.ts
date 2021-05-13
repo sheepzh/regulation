@@ -15,6 +15,8 @@ import Word from './word'
 import Scope from './scope'
 import DictionaryDb from '../../../database/dictionary-db'
 import ScopeList from './scope-list'
+import { unreactive } from '../../../common/vue3-extent'
+import { saveJSON } from '../../../util/file-util'
 
 const db: DictionaryDb = new DictionaryDb(chrome.storage.local)
 
@@ -134,6 +136,13 @@ const renderTable = (_ctx: any) => {
                   })
                 )
                 .catch(() => ElMessage.info('放弃删除'))
+            }),
+            // Export
+            renderOperationButton(_ctx, '导出', () => {
+              const toExport = unreactive(row)
+              delete toExport['id']
+              delete toExport['enabled']
+              saveJSON(toExport, `相关法律法规_${row.name || 'UNAMED'}.json`)
             })
           ]
         }

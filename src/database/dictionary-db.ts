@@ -96,6 +96,28 @@ export default class DictionaryDb {
     }
 
     /**
+     * Import from file 
+     * 
+     * @param toImport the record to import, without uuid in it
+     * @since 0.0.5
+     */
+    import(toImport: XGFLFG.Dictionary): Promise<void> {
+        return new Promise(
+            resolve => this.getCurrentId()
+                .then(
+                    id => {
+                        const key = this.keyOf(id)
+                        toImport.id = id
+                        toImport.enabled = true
+                        const toUpdate = {}
+                        toUpdate[key] = toImport
+                        this.storage.set(toUpdate, () => this.updateId(id, resolve))
+                    }
+                )
+        )
+    }
+
+    /**
      * Delete by id
      * 
      * @since 0.0.1
