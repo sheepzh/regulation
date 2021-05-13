@@ -23,12 +23,9 @@ const generateDocumentObserver = (words: XGFLFG.BannedWordUseReg[]) => {
 const host = window.location.host
 const href = window.location.href
 
-if (filter(host, href)) {
-    console.log('该网址不在相关法律法规管辖范围之内')
-} else {
+if (!filter(host, href)){
     service.listWordsBy(host, href, words => {
         if (words.length) {
-
             const regWords: XGFLFG.BannedWordUseReg[] = words
                 .map(word => {
                     return { origin: new RegExp(word.origin.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'), 'g'), mask: word.mask }
@@ -45,7 +42,7 @@ if (filter(host, href)) {
 
             observer.observe(document, config)
             window.onunload = observer.disconnect
-            console.log('根据相关法律法规，将审核并替换敏感词')
+
             settingDb.getVisiblityOfButton().then(val => {
                 if (val) {
                     const switcher = generateSwitcher(context)
