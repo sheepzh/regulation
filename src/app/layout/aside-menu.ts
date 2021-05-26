@@ -1,21 +1,17 @@
 import { ElMenu, ElMenuItem } from 'element-plus'
 import { defineComponent, h } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
-export default defineComponent({
-  name: 'aside-menu',
-  methods: {
-    changeRoute(route: string) {
-      this.$router.push(route)
-    }
-  },
-  render(_ctx: any) {
-    return h(ElMenu, { defaultActive: useRoute().path, class: 'menu' }, () => [
+export default defineComponent(
+  () => {
+    const router = useRouter()
+    const changeRoute = (route: string) => router.push(route)
+    return () => h(ElMenu, { defaultActive: useRoute().path, class: 'menu' }, () => [
       h(
         ElMenuItem,
         {
           index: '/banned-word',
-          onClick: () => _ctx.changeRoute('/banned-word')
+          onClick: () => changeRoute('/banned-word')
         },
         () => h('span', { class: 'non-selected' }, '违禁词管理')
       ),
@@ -23,10 +19,10 @@ export default defineComponent({
         ElMenuItem,
         {
           index: '/setting',
-          onClick: () => _ctx.changeRoute('/setting')
+          onClick: () => changeRoute('/setting')
         },
         () => h('span', { class: 'non-selected' }, '扩展设置')
       )
     ])
   }
-})
+)
