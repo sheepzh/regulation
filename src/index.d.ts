@@ -9,7 +9,7 @@ declare namespace XGFLFG {
      * 
      * @since 0.0.1
      */
-    export interface BannedWord {
+    type BannedWord = {
         /**
          * The origin word which is excpected to be banned
          */
@@ -21,7 +21,9 @@ declare namespace XGFLFG {
         mask: string
     }
 
-    export interface BannedWordUseReg {
+    type BannedWords = { [key: string]: BannedWord }
+
+    type BannedWordUseReg = {
         /**
          * The origin word which is excpected to be banned
          */
@@ -38,7 +40,7 @@ declare namespace XGFLFG {
      * 
      * @since 0.0.1
      */
-    export interface Dictionary {
+    type Dictionary = {
         id?: number
         name?: string
         remark: string
@@ -47,8 +49,8 @@ declare namespace XGFLFG {
          * Unused temporarily 
          */
         priority?: number
-        scopes?: any
-        words: any
+        scopes?: Scopes
+        words: BannedWords
     }
 
     /**
@@ -56,7 +58,7 @@ declare namespace XGFLFG {
      * 
      * @since 0.0.1
      */
-    export interface Scope {
+    type Scope = {
         /**
          * The regular expression of scope, which is used to filter by host or url
          */
@@ -75,7 +77,9 @@ declare namespace XGFLFG {
         useReg: boolean
     }
 
-    export type ScopeType = 'host' | 'url'
+    type Scopes = { [key: string]: Scope }
+
+    type ScopeType = 'host' | 'url'
 }
 
 export default XGFLFG

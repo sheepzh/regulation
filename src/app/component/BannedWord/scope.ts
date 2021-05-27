@@ -1,6 +1,6 @@
 import { defineComponent, h, reactive } from 'vue'
 import XGFLFG from '../../..'
-import ScopeTest from './scope-test'
+import ScopeTest, { ScopeTestProps } from './scope-test'
 import ScopeAdd from './scope-add'
 import ScopeList from './scope-list'
 import './style/scope'
@@ -33,15 +33,16 @@ export default defineComponent({
   },
   render(_ctx: any) {
     const scopes = _ctx.dict.scopes || {}
+    console.log(scopes)
     return h(ElSpace,
       { direction: 'vertical', style: 'width:100%' },
       () => [
-        h(ScopeTest, { scopes }),
+        h<ScopeTestProps>(ScopeTest, { scopes }),
         h(ScopeAdd, {
           onSaved: (scope: XGFLFG.Scope) => {
             const dict: XGFLFG.Dictionary = _ctx.dict
             if (!dict.scopes) {
-              dict.scopes = new Map<string, XGFLFG.Scope>()
+              dict.scopes = {}
             }
             dict.scopes[scope.type + scope.pattern] = scope
             db.update(unreactive(dict) as XGFLFG.Dictionary).then(() => {
