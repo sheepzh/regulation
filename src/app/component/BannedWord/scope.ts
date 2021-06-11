@@ -33,7 +33,6 @@ export default defineComponent({
   },
   render(_ctx: any) {
     const scopes = _ctx.dict.scopes || {}
-    console.log(scopes)
     return h(ElSpace,
       { direction: 'vertical', style: 'width:100%' },
       () => [
