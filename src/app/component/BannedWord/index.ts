@@ -20,8 +20,8 @@ const tableRef = ref()
 
 // Handle after the file to import is selected
 function handleFileSelected() {
-  const files: FileList = fileInputRef.value.files
-  if (!files.length) {
+  const files: FileList | null = fileInputRef.value.files
+  if (!files || !files.length) {
     return
   }
   const file: File = files[0]

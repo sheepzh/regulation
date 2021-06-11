@@ -38,9 +38,9 @@ class _Replacer {
     }
 
     public replace(node: Node, words: XGFLFG.BannedWordUseReg[], context: Context) {
-
+        const start = Date.now()
         mergeChildren(node)
-
+        console.log(Date.now() - start)
         this.replaceChildren(node, words, context)
     }
 

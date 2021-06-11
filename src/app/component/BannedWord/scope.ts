@@ -54,7 +54,7 @@ export default defineComponent({
         h(ScopeList, {
           scopes, onDeleted: (key: string) => {
             const dict: XGFLFG.Dictionary = _ctx.dict
-            delete dict.scopes[key]
+            dict.scopes && delete dict.scopes[key]
             db.update(dict).then(() => {
               ElMessage.success('删除成功')
             })

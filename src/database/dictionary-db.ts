@@ -86,7 +86,7 @@ export default class DictionaryDb {
                             const key = this.keyOf(id)
                             toAdd.id = id
                             toAdd.enabled = true
-                            toAdd.words = new Map()
+                            toAdd.words = {}
                             const toUpdate = {}
                             toUpdate[key] = toAdd
                             this.storage.set(toUpdate, () => this.updateId(id, resolve))

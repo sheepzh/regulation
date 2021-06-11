@@ -1,6 +1,6 @@
 
 import { ElAlert, ElInput, ElCol, ElRow, ElButton } from "element-plus"
-import { defineComponent, h, reactive, ref, SetupContext, UnwrapRef, VNode, watch, watchEffect } from "vue"
+import { defineComponent, h, reactive, SetupContext, UnwrapRef, VNode, watchEffect } from "vue"
 import { read as readClipboard } from 'clipboardy'
 import { matchScope } from "../../../common/matcher"
 import Url from 'url-parse'

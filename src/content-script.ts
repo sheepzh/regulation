@@ -23,7 +23,7 @@ const generateDocumentObserver = (words: XGFLFG.BannedWordUseReg[]) => {
 const host = window.location.host
 const href = window.location.href
 
-if (!filter(host, href)){
+if (!filter(host, href)) {
     service.listWordsBy(host, href, words => {
         if (words.length) {
             const regWords: XGFLFG.BannedWordUseReg[] = words
@@ -37,18 +37,19 @@ if (!filter(host, href)){
                 // Resolve static dom nodes
                 document.body.childNodes.forEach(node => replacer.replace(node, regWords, context))
             }
-            
+
             const observer = generateDocumentObserver(regWords)
 
             observer.observe(document, config)
             window.onunload = observer.disconnect
 
-            settingDb.getVisiblityOfButton().then(val => {
-                if (val) {
-                    const switcher = generateSwitcher(context)
-                    window.onload = () => document.body.append(switcher)
-                }
-            })
+            settingDb.getVisiblityOfButton()
+                .then(val => {
+                    if (val) {
+                        const switcher = generateSwitcher(context)
+                        window.onload = () => document.body.append(switcher)
+                    }
+                })
 
         }
     })

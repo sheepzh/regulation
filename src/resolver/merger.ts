@@ -63,7 +63,7 @@ export default function mergeChildren(node: Node): void {
         const child = children[index]
 
         if (lastElement === null) {
-            // No last element
+            // No the last element
             lastElement = child
         } else {
             if (canMerge(lastElement, child)) {
@@ -75,9 +75,6 @@ export default function mergeChildren(node: Node): void {
                 mergeChildren(lastElement)
                 lastElement = child
             }
-        }
-        if (lastElement !== null) {
-            mergeChildren(lastElement)
         }
     }
 }
