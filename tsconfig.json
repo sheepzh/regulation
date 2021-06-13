@@ -1,28 +1,19 @@
 {
     "compilerOptions": {
-        "module": "esnext",
+        "module": "commonjs",
         "target": "es5",
-        "lib": [
-            "es6",
-            "dom"
-        ],
+        "esModuleInterop": true,
         "sourceMap": true,
-        "allowJs": true,
-        "jsx": "preserve",
-        "jsxFactory": "VueTsxSupport",
-        "moduleResolution": "node",
-        "rootDir": "src",
-        "forceConsistentCasingInFileNames": true,
-        "noImplicitReturns": true,
-        "noImplicitThis": true,
-        "noImplicitAny": true,
-        "strictNullChecks": true,
-        "suppressImplicitAnyIndexErrors": true,
-        "noUnusedLocals": true,
-        "allowSyntheticDefaultImports": true
+        "resolveJsonModule": true,
+        "importHelpers": true,
+        "moduleResolution": "node"
     },
-    "include": [
-        "./node_modules/vue-tsx-support/enable-check.d.ts",
-        "./src/index.d.ts"
-    ]
+    "lib": [
+        "dom"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
+    ],
+    "strict": true
 }

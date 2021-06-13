@@ -4,8 +4,9 @@
  * @author zhy
  * @since 0.0.1
  */
-const { version, author, homepage } = require('../package.json')
-module.exports = {
+//@ts-ignore
+import { version, author, homepage } from '../package.json'
+const manifest = {
     name: '相关法律法规',
     description: "谁还能没点精神洁癖？",
     version,
@@ -41,3 +42,5 @@ module.exports = {
         'storage'
     ]
 }
+
+export default manifest

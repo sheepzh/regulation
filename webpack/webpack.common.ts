@@ -1,23 +1,23 @@
-const path = require('path')
-const GenerateJsonPlugin = require('generate-json-webpack-plugin')
-const CopyWebpackPlugin = require('copy-webpack-plugin')
+import path from 'path'
+import GenerateJsonPlugin from 'generate-json-webpack-plugin'
+import CopyWebpackPlugin from 'copy-webpack-plugin'
+import webapck from 'webpack'
 
-// Generate json files 
-const manifest = require('../src/manifest')
-const generateJsonPlugins = [new GenerateJsonPlugin('manifest.json', manifest)]
+import manifest from '../src/manifest'
 
-const optionGenerator = (outputPath, manifestHooker) => {
+const optionGenerator = (outputPath: string, manifestHooker?: (manifest: any) => void) => {
     manifestHooker && manifestHooker(manifest)
-    const plugins = [
-        ...generateJsonPlugins,
+    const plugins: webapck.WebpackPluginInstance[] = [
+        // Generate json files 
+        new GenerateJsonPlugin('manifest.json', manifest) as unknown as webapck.WebpackPluginInstance,
         // copy static resources
         new CopyWebpackPlugin({
             patterns: [
                 { from: path.join(__dirname, '..', 'public'), to: path.join(outputPath, 'static') }
             ]
-        })
+        }) as webapck.WebpackPluginInstance
     ]
-    return {
+    const config: webapck.Configuration = {
         entry: {
             content_scripts: './src/content-script',
             app: './src/app/main',
@@ -62,7 +62,8 @@ const optionGenerator = (outputPath, manifestHooker) => {
             extensions: [".tsx", '.ts', ".js", '.css', '.scss'],
         }
     }
+    return config
 }
 
 
-module.exports = optionGenerator
+export default optionGenerator

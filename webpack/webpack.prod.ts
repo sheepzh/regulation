@@ -1,6 +1,7 @@
-const optionGenerator = require('./webpack.base')
-const path = require('path')
-const FileManagerWebpackPlugin = require('filemanager-webpack-plugin')
+import optionGenerator from './webpack.common'
+import path from 'path'
+import FileManagerWebpackPlugin from 'filemanager-webpack-plugin'
+import webpack from 'webpack'
 
 const { name, version } = require(path.join(__dirname, '..', 'package.json'))
 
@@ -18,7 +19,7 @@ const copyMapper = srcDir.map(p => { return { source: path.join(__dirname, '..',
 
 const readmeForForfix = path.join(__dirname, '..', 'doc', 'for-fire-fox.md')
 
-options.plugins.push(
+options.plugins && options.plugins.push(
     new FileManagerWebpackPlugin({
         events: {
             onStart: [{ delete: [path.join(outputDir, '*')] }],
@@ -44,9 +45,9 @@ options.plugins.push(
                 }
             ]
         }
-    })
+    }) as webpack.WebpackPluginInstance
 )
 
-options.output.path = outputDir
+options.output && (options.output.path = outputDir)
 
-module.exports = options
+export default options
