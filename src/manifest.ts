@@ -7,7 +7,7 @@
 //@ts-ignore
 import { version, author, homepage } from '../package.json'
 const manifest = {
-    name: '__MSG_app_marketName__',
+    name: '__MSG_app_name__',
     description: "__MSG_app_description__",
     version,
     author,
