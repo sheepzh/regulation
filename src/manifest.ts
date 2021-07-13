@@ -7,15 +7,16 @@
 //@ts-ignore
 import { version, author, homepage } from '../package.json'
 const manifest = {
-    name: '相关法律法规',
-    description: "谁还能没点精神洁癖？",
+    name: '__MSG_app_marketName__',
+    description: "__MSG_app_description__",
     version,
     author,
+    default_locale: 'en',
     homepage_url: homepage,
     manifest_version: 2,
     browser_action: {
         default_icon: "static/images/icon.png",
-        default_title: "违禁词管理"
+        default_title: "__MSG_app_iconTitle__"
     },
     icons: {
         16: "static/images/icon.png",

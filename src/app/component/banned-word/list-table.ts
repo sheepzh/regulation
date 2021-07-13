@@ -15,8 +15,9 @@ import Word from './word'
 import Scope from './scope'
 import DictionaryDb from '../../../database/dictionary-db'
 import ScopeList from './scope-list'
-import { unreactive } from '../../../common/vue3-extent'
+import { nonreactive } from '../../../common/vue3-extent'
 import { saveJSON } from '../../../util/file-util'
+import { t } from '../../locale'
 
 const db: DictionaryDb = new DictionaryDb(chrome.storage.local)
 
@@ -42,12 +43,12 @@ const renderOperationButton = (
 const renderTable = (_ctx: any) => {
   const children = [
     // Name
-    h(ElTableColumn, { prop: 'name', align, minWidth: 40, label: '名称' }),
+    h(ElTableColumn, { prop: 'name', align, minWidth: 40, label: t(msg => msg.item.name) }),
     // Quantity or words
     h(ElTableColumn, {
       align,
       minWidth: 40,
-      label: '词汇数量',
+      label: t(msg => msg.item.wordCount),
       formatter: (row: XGFLFG.Dictionary) => Object.values(row.words).length || 0
     }),
     // Scope of domain
@@ -56,7 +57,7 @@ const renderTable = (_ctx: any) => {
       {
         align,
         minWidth: 40,
-        label: '生效范围'
+        label: t(msg => msg.item.scope)
       },
       {
         default(data: any) {
@@ -66,7 +67,7 @@ const renderTable = (_ctx: any) => {
           const tag = () => h(
             ElTag,
             { type: full ? 'info' : 'primary', size: 'mini' },
-            { default: () => (full ? '全部网站' : '部分网站') }
+            { default: () => t(msg => full ? msg.item.scopeResult.all : msg.item.scopeResult.some) }
           )
           const content = () => h(ScopeList, { scopes: row.scopes || {}, tooltipEffect: 'light' })
 
@@ -75,14 +76,14 @@ const renderTable = (_ctx: any) => {
       }
     ),
     // Remark
-    h(ElTableColumn, { prop: 'remark', align, minWidth: 80, label: '备注' }),
+    h(ElTableColumn, { prop: 'remark', align, minWidth: 80, label: t(msg => msg.item.remark) }),
     // Enabled
     h(
       ElTableColumn,
       {
         align,
         minWidth: 30,
-        label: '开启/关闭'
+        label: t(msg => msg.item.enabled)
       },
       {
         default: (data: any) => {
@@ -100,49 +101,49 @@ const renderTable = (_ctx: any) => {
     // Operations
     h(
       ElTableColumn,
-      { align, minWidth: 70, label: '其他操作' },
+      { align, minWidth: 70, label: t(msg => msg.item.operation) },
       {
         default: (data: any) => {
           const row: XGFLFG.Dictionary = data.row
           return [
             // Word management
-            renderOperationButton(_ctx, '违禁词', () => {
+            renderOperationButton(_ctx, t(msg => msg.item.words), () => {
               _ctx.current = row
               _ctx.wordOpen = true
               _ctx.$refs[wordRefName] && _ctx.$refs[wordRefName].closeInput()
             }),
             // Scope management
-            renderOperationButton(_ctx, '生效范围', () => {
+            renderOperationButton(_ctx, t(msg => msg.item.scope), () => {
               _ctx.current = row
               _ctx.scopeOpen = true
             }),
             // Edit
-            renderOperationButton(_ctx, '编辑', () => _ctx.$emit('edit', row)),
+            renderOperationButton(_ctx, t(msg => msg.dict.button.edit), () => _ctx.$emit('edit', row)),
             // Delete
-            renderOperationButton(_ctx, '删除', () => {
+            renderOperationButton(_ctx, t(msg => msg.dict.button.delete), () => {
               ElMessageBox.confirm(
-                `是否删除词典[${row.name}]？`,
-                '操作提示',
+                t(msg => msg.dict.msg.deleteConfirmMsg, { name: row.name }),
+                t(msg => msg.dict.msg.operationConfirmation),
                 {
-                  cancelButtonText: '放弃',
-                  confirmButtonText: '是的',
+                  cancelButtonText: t(msg => msg.dict.button.giveUp),
+                  confirmButtonText: t(msg => msg.dict.button.ok),
                   type: 'warning'
                 }
               )
                 .then(() =>
                   db.delete(row.id || 0).then(() => {
-                    ElMessage.success('删除成功')
+                    ElMessage.success(t(msg => msg.dict.msg.deletedSuccessfully))
                     _ctx.query()
                   })
                 )
-                .catch(() => ElMessage.info('放弃删除'))
+                .catch(() => { })
             }),
             // Export
-            renderOperationButton(_ctx, '导出', () => {
-              const toExport = unreactive(row)
+            renderOperationButton(_ctx, t(msg => msg.dict.button.export), () => {
+              const toExport = nonreactive(row)
               delete toExport['id']
               delete toExport['enabled']
-              saveJSON(toExport, `相关法律法规_${row.name || 'UNAMED'}.json`)
+              saveJSON(toExport, `${t(msg => msg.app.name)}_${row.name || 'UNNAMED'}.json`)
             })
           ]
         }
@@ -168,7 +169,7 @@ const renderWord = (_ctx: any) => {
   return h(
     ElDialog,
     {
-      title: `违禁词管理：${dict.name}`,
+      title: `${t(msg => msg.item.words)} - ${dict.name}`,
       modelValue: _ctx.wordOpen,
       destroyOnClose: true,
       onClosed: () => (_ctx.wordOpen = false)
@@ -182,7 +183,7 @@ const renderScope = (_ctx: any) => {
   const dict: XGFLFG.Dictionary = _ctx.current
   return h(ElDialog,
     {
-      title: `生效范围管理：${dict.name}`,
+      title: `${t(msg => msg.item.scope)} - ${dict.name}`,
       modelValue: _ctx.scopeOpen,
       destroyOnClose: true,
       onClosed: () => (_ctx.scopeOpen = false)

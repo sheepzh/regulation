@@ -2,6 +2,7 @@ import { ElButton, ElInput, ElOption, ElRow, ElSelect, ElSwitch, ElTooltip, ElCo
 import { defineComponent, h, reactive } from 'vue'
 import { read as readClipboard } from 'clipboardy'
 import XGFLFG from '../../..'
+import { t } from '../../locale'
 
 const inputRef = 'scopeInput'
 
@@ -10,7 +11,7 @@ const save = (_ctx: any) => {
   const pattern = _ctx.pattern
   const type = _ctx.type
   if (!pattern) {
-    ElMessage.error('未输入网址或域名')
+    ElMessage.error(t(msg => msg.dict.msg.noUrlError))
     _ctx.$refs[inputRef].focus()
     return
   }
@@ -19,7 +20,7 @@ const save = (_ctx: any) => {
     try {
       new RegExp(pattern)
     } catch (e) {
-      ElMessage.error('无效的正则表达式')
+      ElMessage.error(t(msg => msg.dict.msg.invalidRegularError))
       _ctx.$refs[inputRef].focus()
       return
     }
@@ -49,15 +50,15 @@ export default defineComponent({
       },
       {
         default: () => {
-          const types = { 'host': '域名', 'url': '网址' }
-          return Object.keys(types).map(key => h(ElOption, { label: types[key], value: key }))
+          const allTypes: XGFLFG.ScopeType[] = ['url', 'host']
+          return allTypes.map(type => h(ElOption, { label: t(msg => msg.item.scopeType[type]), value: type }))
         }
       }
     )
 
     const useRegSwitch = () => h(ElTooltip,
       {
-        content: "是否启用正则匹配？",
+        content: t(msg => msg.dict.msg.useRegularMsg),
         placement: "left",
       },
       { default: () => h(ElSwitch, { modelValue: _ctx.useReg, onChange: (val: boolean) => _ctx.useReg = val }) }
@@ -69,19 +70,19 @@ export default defineComponent({
         icon: 'el-icon-plus',
         onClick: () => save(_ctx)
       },
-      { default: () => '新增' }
+      { default: () => t(msg => msg.dict.button.add) }
     )
 
     const pasteButton = h(ElButton,
       { icon: 'el-icon-document-copy', onClick: () => readClipboard().then(updatePattern) },
-      { default: () => '粘贴' }
+      { default: () => t(msg => msg.dict.button.paste) }
     )
 
     const input = () => h(ElInput,
       {
         ref: inputRef,
         modelValue: _ctx.pattern,
-        placeholder: '输入字典的有效范围，网址或者域名。需要使用正则表达式，请打开左侧开关',
+        placeholder: t(msg => msg.dict.msg.urlPlaceholder),
         class: 'scope-input',
         clearable: true,
         onInput: updatePattern,

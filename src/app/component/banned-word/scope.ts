@@ -6,7 +6,8 @@ import ScopeList from './scope-list'
 import './style/scope'
 import { ElMessage, ElSpace } from 'element-plus'
 import DictionaryDb from '../../../database/dictionary-db'
-import { unreactive } from '../../../common/vue3-extent'
+import { nonreactive } from '../../../common/vue3-extent'
+import { t } from '../../locale'
 
 const db: DictionaryDb = new DictionaryDb(chrome.storage.local)
 
@@ -44,14 +45,16 @@ export default defineComponent({
               dict.scopes = {}
             }
             dict.scopes[scope.type + scope.pattern] = scope
-            db.update(unreactive(dict) as XGFLFG.Dictionary).then(() => {
-              ElMessage.success('添加成功')
+            db.update(nonreactive(dict) as XGFLFG.Dictionary).then(() => {
+              ElMessage.success(t(msg => msg.dict.msg.savedSuccessfully))
             })
           }
         }),
         h('div', { style: 'height:15px; width:100%;' }),
         h(ScopeList, {
-          scopes, onDeleted: (key: string) => {
+          scopes,
+          closable: true,
+          onDeleted: (key: string) => {
             const dict: XGFLFG.Dictionary = _ctx.dict
             dict.scopes && delete dict.scopes[key]
             db.update(dict).then(() => {

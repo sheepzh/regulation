@@ -1,26 +1,33 @@
 import path from 'path'
 import GenerateJsonPlugin from 'generate-json-webpack-plugin'
 import CopyWebpackPlugin from 'copy-webpack-plugin'
-import webapck from 'webpack'
+import webpack from 'webpack'
+import i18nChrome from '../src/util/i18n/chrome'
 
 import manifest from '../src/manifest'
 
 const optionGenerator = (outputPath: string, manifestHooker?: (manifest: any) => void) => {
     manifestHooker && manifestHooker(manifest)
-    const plugins: webapck.WebpackPluginInstance[] = [
+    const plugins: webpack.WebpackPluginInstance[] = [
         // Generate json files 
-        new GenerateJsonPlugin('manifest.json', manifest) as unknown as webapck.WebpackPluginInstance,
+        new GenerateJsonPlugin('manifest.json', manifest) as unknown as webpack.WebpackPluginInstance,
         // copy static resources
         new CopyWebpackPlugin({
             patterns: [
                 { from: path.join(__dirname, '..', 'public'), to: path.join(outputPath, 'static') }
             ]
-        }) as webapck.WebpackPluginInstance
+        }) as webpack.WebpackPluginInstance
     ]
-    const config: webapck.Configuration = {
+
+    const localeJsonArr = Object.entries(i18nChrome)
+        .map(([locale, message]) => new GenerateJsonPlugin(`_locales/${locale}/messages.json`, message))
+        .map(plugin => plugin as unknown as webpack.WebpackPluginInstance)
+    plugins.push(...localeJsonArr)
+
+    const config: webpack.Configuration = {
         entry: {
             content_scripts: './src/content-script',
-            app: './src/app/main',
+            app: './src/app',
             background: './src/background'
         },
         output: {

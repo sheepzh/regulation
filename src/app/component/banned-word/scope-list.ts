@@ -1,6 +1,7 @@
 import { ElTag, ElTooltip } from 'element-plus'
 import { defineComponent, h, reactive } from 'vue'
 import XGFLFG from '../../..'
+import { t } from '../../locale'
 
 export default defineComponent({
   name: 'scope-list',
@@ -11,30 +12,37 @@ export default defineComponent({
     },
     tooltipEffect: {
       type: String
+    },
+    closable: {
+      type: Boolean,
+      required: false
     }
   },
   emits: ['deleted'],
   setup(_props: any) {
     const scopes = _props.scopes
     const tooltipEffect = _props.tooltipEffect || 'dark'
+    const closable = _props.closable || false
     return reactive({
       scopes,
-      tooltipEffect
+      tooltipEffect,
+      closable
     })
   },
   render(_ctx: any) {
     const scopes = _ctx.scopes || {}
     const tags = []
+    const closable = _ctx.closable
     for (const key in scopes) {
       const scope = scopes[key] as XGFLFG.Scope
-      const tagType = { closable: true, onClose: () => _ctx.$emit('deleted', key), style: 'margin-right:6px;margin-bottom:6px;' }
+      const tagType = { closable, onClose: () => _ctx.$emit('deleted', key), style: 'margin-right:6px;margin-bottom:6px;' }
       if (scope.useReg) {
         tagType['type'] = 'warning'
       }
       const i = h('i', { class: `el-icon-${scope.type === 'url' ? 'link' : 'collection'}`, style: 'margin-right:4px' })
       const tooltip = h(ElTooltip,
         {
-          content: `${scope.type === 'url' ? '网址' : '域名'}${scope.useReg ? '(使用正则)' : ''}`,
+          content: `${t(msg => msg.item.scopeType[scope.type])}${scope.useReg ? t(msg => msg.item.useRegSuffix) : ''}`,
           placement: 'bottom',
           effect: _ctx.tooltipEffect
         },

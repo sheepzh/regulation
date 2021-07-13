@@ -8,11 +8,11 @@ const routes: RouteRecordRaw[] = [
         redirect: '/banned-word'
     }, {
         path: '/banned-word',
-        component: () => import('./component/BannedWord')
+        component: () => import('./component/banned-word')
     },
     {
         path: '/setting',
-        component: () => import('./component/Setting')
+        component: () => import('./component/setting')
     }
 ]
 

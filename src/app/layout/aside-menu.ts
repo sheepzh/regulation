@@ -1,28 +1,35 @@
 import { ElMenu, ElMenuItem } from 'element-plus'
 import { defineComponent, h } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { Router, useRoute, useRouter } from 'vue-router'
+import { I18nKey, t } from '../locale'
 
-export default defineComponent(
-  () => {
-    const router = useRouter()
-    const changeRoute = (route: string) => router.push(route)
-    return () => h(ElMenu, { defaultActive: useRoute().path, class: 'menu' }, () => [
-      h(
-        ElMenuItem,
-        {
-          index: '/banned-word',
-          onClick: () => changeRoute('/banned-word')
-        },
-        () => h('span', { class: 'non-selected' }, '违禁词管理')
-      ),
-      h(
-        ElMenuItem,
-        {
-          index: '/setting',
-          onClick: () => changeRoute('/setting')
-        },
-        () => h('span', { class: 'non-selected' }, '扩展设置')
-      )
-    ])
+type MenuInfo = {
+  route: string
+  title: I18nKey
+}
+
+const menuInfos: MenuInfo[] = [
+  {
+    route: '/banned-word',
+    title: msg => msg.menu.dictionary
+  }, {
+    route: '/setting',
+    title: msg => msg.menu.setting
   }
+]
+
+const changeRoute = (router: Router, route: string) => router.push(route)
+const renderMenu = (router: Router, { route, title }: MenuInfo) => h(
+  ElMenuItem,
+  {
+    index: route,
+    onClick: () => changeRoute(router, route)
+  },
+  () => h('span', { class: 'non-selected' }, t(title))
 )
+
+export default defineComponent(() => {
+  const router = useRouter()
+  const menus = () => menuInfos.map(menu => renderMenu(router, menu))
+  return () => h(ElMenu, { defaultActive: useRoute().path, class: 'menu' }, menus)
+})

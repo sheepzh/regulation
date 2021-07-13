@@ -1,56 +1,36 @@
 import XGFLFG from '..'
-
+import BaseDb from './common/base-db'
 
 const KEY = '_DICT_'
 const ID_KEY = '_DICT_ID'
 const INITIAL_ID = 1
 
+const keyOf = (id: number) => KEY + id.toString()
+
 /**
  * @since 0.0.1
  */
-export default class DictionaryDb {
+export default class DictionaryDb extends BaseDb {
 
-    /**
-     * The storage instance
-     */
-    private storage: chrome.storage.StorageArea
-
-    constructor(storage: chrome.storage.StorageArea) {
-        this.storage = storage
+    private async getCurrentId(): Promise<number> {
+        const data: any = await this.storage.get(ID_KEY)
+        const before = data[ID_KEY]
+        if (!before) {
+            return INITIAL_ID
+        } else {
+            return (before as number) + 1
+        }
     }
 
-    private keyOf(id: number): string {
-        return KEY + id.toString()
+    private async updateId(id: number): Promise<void> {
+        await this.setByKey(ID_KEY, id)
     }
 
-    private getCurrentId(): Promise<number> {
-        return new Promise((resolve) => {
-            this.storage.get(ID_KEY, (data: any) => {
-                const before = data[ID_KEY]
-                if (!before) {
-                    resolve(INITIAL_ID)
-                } else {
-                    resolve((before as number) + 1)
-                }
-            })
-        })
-    }
-
-    private updateId(id: number, callback: () => void) {
-        const toUpdate = {}
-        toUpdate[ID_KEY] = id
-        this.storage.set(toUpdate, callback)
-    }
-
-    getById(id: number): Promise<XGFLFG.Dictionary> {
-        const key = this.keyOf(id)
-        return new Promise((resolve, reject) => {
-            this.storage.get(key, data => {
-                const row = data[key]
-                !!row ? resolve(row as XGFLFG.Dictionary) : (reject(new Error('词典不存在')))
-            })
-        })
-
+    async getById(id: number): Promise<XGFLFG.Dictionary> {
+        const key = keyOf(id)
+        const data = await this.storage.get(key)
+        const row = data[key]
+        return row ? row as XGFLFG.Dictionary : Promise.reject(new Error('Not found'))
     }
 
     /**
@@ -58,18 +38,11 @@ export default class DictionaryDb {
      * 
      * @param callback 
      */
-    listAll(): Promise<XGFLFG.Dictionary[]> {
-        return new Promise(resolve => {
-            this.storage.get((data: any) => {
-                const items: XGFLFG.Dictionary[] = []
-                for (let key in data) {
-                    if (key.startsWith(KEY) && key !== ID_KEY) {
-                        items.push(data[key] as XGFLFG.Dictionary)
-                    }
-                }
-                resolve(items)
-            })
-        })
+    async listAll(): Promise<XGFLFG.Dictionary[]> {
+        const allData = await this.storage.get()
+        return Object.entries(allData)
+            .filter(([key]) => key.startsWith(KEY) && key !== ID_KEY)
+            .map(([_key, value]) => value as XGFLFG.Dictionary)
     }
 
     /**
@@ -77,22 +50,14 @@ export default class DictionaryDb {
      * 
      * @param toAdd the record to add, without uuid in it
      */
-    add(toAdd: XGFLFG.Dictionary): Promise<void> {
-        return new Promise(
-            resolve =>
-                this.getCurrentId()
-                    .then(
-                        id => {
-                            const key = this.keyOf(id)
-                            toAdd.id = id
-                            toAdd.enabled = true
-                            toAdd.words = {}
-                            const toUpdate = {}
-                            toUpdate[key] = toAdd
-                            this.storage.set(toUpdate, () => this.updateId(id, resolve))
-                        }
-                    )
-        )
+    async add(toAdd: XGFLFG.Dictionary): Promise<void> {
+        const id = await this.getCurrentId()
+        const key = keyOf(id)
+        toAdd.id = id
+        toAdd.enabled = true
+        toAdd.words = {}
+        await this.setByKey(key, toAdd)
+        await this.updateId(id)
     }
 
     /**
@@ -101,20 +66,13 @@ export default class DictionaryDb {
      * @param toImport the record to import, without uuid in it
      * @since 0.0.5
      */
-    import(toImport: XGFLFG.Dictionary): Promise<void> {
-        return new Promise(
-            resolve => this.getCurrentId()
-                .then(
-                    id => {
-                        const key = this.keyOf(id)
-                        toImport.id = id
-                        toImport.enabled = true
-                        const toUpdate = {}
-                        toUpdate[key] = toImport
-                        this.storage.set(toUpdate, () => this.updateId(id, resolve))
-                    }
-                )
-        )
+    async import(toImport: XGFLFG.Dictionary): Promise<void> {
+        const id = await this.getCurrentId()
+        const key = keyOf(id)
+        toImport.id = id
+        toImport.enabled = true
+        await this.setByKey(key, toImport)
+        await this.updateId(id)
     }
 
     /**
@@ -122,8 +80,8 @@ export default class DictionaryDb {
      * 
      * @since 0.0.1
      */
-    delete(id: number): Promise<void> {
-        return new Promise(resolve => this.storage.remove(this.keyOf(id), resolve))
+    async delete(id: number): Promise<void> {
+        await this.storage.remove(keyOf(id))
     }
 
     /**
@@ -132,32 +90,20 @@ export default class DictionaryDb {
      * @param id id
      * @param enabled enabled
      */
-    updateEnabled(id: number, enabled: boolean,): Promise<void> {
-        return new Promise(resolve => {
-            this.getById(id)
-                .then(
-                    dict => {
-                        dict.enabled = enabled
-                        const toUpdate = {}
-                        toUpdate[this.keyOf(id)] = dict
-                        this.storage.set(toUpdate, resolve)
-                    })
-        })
+    async updateEnabled(id: number, enabled: boolean,): Promise<void> {
+        const exist = await this.getById(id)
+        exist.enabled = enabled
+        this.setByKey(keyOf(id), exist)
     }
 
     /**
      * Update the info
      */
-    update(dict: XGFLFG.Dictionary): Promise<void> {
-        return new Promise(resolve => {
-            const id = dict.id
-            if (!id) {
-                resolve()
-            } else {
-                const toUpdate = {}
-                toUpdate[this.keyOf(id)] = dict
-                this.storage.set(toUpdate, resolve)
-            }
-        })
+    async update(dict: XGFLFG.Dictionary): Promise<void> {
+        const id = dict.id
+        if (!id) {
+            return
+        }
+        await this.setByKey(keyOf(id), dict)
     }
 }

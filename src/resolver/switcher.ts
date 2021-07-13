@@ -1,8 +1,9 @@
 import { ORIGIN_TEXT_ATTR_NAME, REPLACED_CLASS_NAME } from "../constant/element"
+import { t2Chrome } from "../util/i18n/chrome/t"
 import Context from "./context"
 
-const SHOW = '显示违禁词'
-const HIDE = '隐藏违禁词'
+const SHOW = t2Chrome(msg => msg.restore.restoreButton)
+const HIDE = t2Chrome(msg => msg.restore.hideButton)
 
 export default function generate(context: Context): Element {
     const div = document.createElement('div')
@@ -11,7 +12,6 @@ export default function generate(context: Context): Element {
     style.right = '10px'
     style.height = '20px'
     style.lineHeight = '20px'
-    style.width = '60px'
     style.fontSize = '12px'
     style.zIndex = '10000'
     style.position = 'fixed'

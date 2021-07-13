@@ -43,7 +43,7 @@ if (!filter(host, href)) {
             observer.observe(document, config)
             window.onunload = observer.disconnect
 
-            settingDb.getVisiblityOfButton()
+            settingDb.getVisibilityOfButton()
                 .then(val => {
                     if (val) {
                         const switcher = generateSwitcher(context)

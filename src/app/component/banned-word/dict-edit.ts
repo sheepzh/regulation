@@ -3,7 +3,8 @@ import { ElButton, ElDialog, ElInput, ElMessage } from 'element-plus'
 import './style/dict-add'
 import XGFLFG from '../../..'
 import DictionaryDb from '../../../database/dictionary-db'
-import { unreactive } from '../../../common/vue3-extent'
+import { nonreactive as nonreactive } from '../../../common/vue3-extent'
+import { t } from '../../locale'
 
 interface Props {
   isOpen: boolean
@@ -18,24 +19,24 @@ export default defineComponent({
   emits: ['saved'],
   methods: {
     add() {
-      this.title = '新增违禁词词典'
+      this.title = t(msg => msg.dict.button.add)
       this.isOpen = true
     },
     edit(row: XGFLFG.Dictionary) {
-      this.title = '编辑违禁词词典'
+      this.title = t(msg => msg.dict.button.edit)
       this.formData = row
       this.isOpen = true
     },
     save() {
-      const data: XGFLFG.Dictionary = unreactive(this.formData) as XGFLFG.Dictionary
+      const data: XGFLFG.Dictionary = nonreactive(this.formData) as XGFLFG.Dictionary
       if (!data.name) {
-        ElMessage.error('词典名称不能为空')
+        ElMessage.error(t(msg => msg.dict.msg.nameBlankError))
       } else {
         // Update if ID exists, or add it
         const toDo: (dict: XGFLFG.Dictionary) => Promise<void> = data.id ? data => db.update(data) : data => db.add(data)
 
         toDo(data).then(() => {
-          ElMessage.success(data.id ? '修改成功' : '新增成功'),
+          ElMessage.success(t(msg => msg.dict.msg.savedSuccessfully)),
             this.$emit('saved', data)
 
           // Clear all the form items
@@ -59,7 +60,7 @@ export default defineComponent({
     const dialogBody = () =>
       h('div', [
         h(ElInput, {
-          placeholder: '请输入词典名称',
+          placeholder: t(msg => msg.item.name),
           modelValue: _ctx.formData.name,
           onInput: (val: string) => (_ctx.formData.name = val.trim()),
           onClear: () => (_ctx.formData.name = _ctx.formData.remark = ''),
@@ -70,7 +71,7 @@ export default defineComponent({
           type: 'textarea',
           rows: 4,
           class: 'dict-field',
-          placeholder: '词典的备注信息',
+          placeholder: t(msg => msg.item.remark),
           modelValue: _ctx.formData.remark,
           onInput: (val: string) => (_ctx.formData.remark = val.trim()),
           clearable: true,
@@ -87,7 +88,7 @@ export default defineComponent({
             icon: 'el-icon-check',
             onClick: _ctx.save
           },
-          () => '确认'
+          () => t(msg => msg.dict.button.confirm)
         ),
         h(
           ElButton,
@@ -96,7 +97,7 @@ export default defineComponent({
             size: 'mini',
             onClick: () => (_ctx.isOpen = false)
           },
-          () => '取消'
+          () => t(msg => msg.dict.button.cancel)
         )
       ])
 

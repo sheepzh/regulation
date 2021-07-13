@@ -1,34 +1,24 @@
+import BaseDb from "./common/base-db"
+
 const PREFIX = '_SETTING_'
-const BUTTON_VISIBLITY = PREFIX + 'BUTTON_VISIBLITY_'
-export default class SettingDb {
+const BUTTON_VISIBILITY = PREFIX + 'BUTTON_VISIBILITY_'
+export default class SettingDb extends BaseDb {
     /**
-      * The storage instance
-      */
-    private storage: chrome.storage.StorageArea
-
-    constructor(storage: chrome.storage.StorageArea) {
-        this.storage = storage
-    }
-
-    /**
-     * Update the visiblity of button
+     * Update the visibility of button
      * 
      * @param val val
      */
-    updateVisiblityOfButton(val: boolean): Promise<void> {
-        const toUpdate = {}
-        toUpdate[BUTTON_VISIBLITY] = val
-        return new Promise(resolve => this.storage.set(toUpdate, resolve))
+    async updateVisibilityOfButton(val: boolean): Promise<void> {
+        await this.setByKey(BUTTON_VISIBILITY, val)
     }
 
     /**
-     * Get the visiblity of button
+     * Get the visibility of button
      * 
      * @param val val
      */
-    getVisiblityOfButton(): Promise<boolean> {
-        return new Promise(resolve => {
-            this.storage.get(BUTTON_VISIBLITY, items => resolve(items[BUTTON_VISIBLITY] || false))
-        })
+    async getVisibilityOfButton(): Promise<boolean> {
+        const data: any = await this.storage.get(BUTTON_VISIBILITY)
+        return data[BUTTON_VISIBILITY] || false
     }
 }

@@ -5,6 +5,8 @@ import { read as readClipboard } from 'clipboardy'
 import { matchScope } from "../../../common/matcher"
 import Url from 'url-parse'
 import XGFLFG from "../../.."
+import { t } from "../../locale"
+import { DictMessage } from '../../locale/components/dict'
 
 const url2Host = (urlStr: string) => {
   const url = Url(urlStr)
@@ -26,7 +28,7 @@ type Props = {
   scopes: XGFLFG.Scopes
 }
 
-const NO_MSG_RESULT: () => TestResult = () => { return { type: 'info', msg: '请输入待测试网址' } }
+const NO_MSG_RESULT: () => TestResult = () => { return { type: 'info', msg: t(msg => msg.dict.testResult.noTestUrl) } }
 
 const comp = defineComponent(
   (_props: Props, context: SetupContext) => {
@@ -44,7 +46,7 @@ const comp = defineComponent(
     const test: () => TestResult = () => {
       const scopes = binding.scopes
       if (!scopes || !Object.values(scopes).length) {
-        return { type: 'success', msg: '字典有效，未指定范围。' }
+        return { type: 'success', msg: t(msg => msg.dict.testResult.effectiveNoWord) }
       }
       const url = binding.targetUrl
       if (!url || url === '') {
@@ -55,13 +57,13 @@ const comp = defineComponent(
         const scope: XGFLFG.Scope = scopes[index]
         try {
           if (matchScope(scope, host, url)) {
-            return { type: 'success', msg: `字典有效：${scope.pattern}` }
+            return { type: 'success', msg: t(msg => msg.dict.testResult.effectiveWithPattern, { pattern: scope.pattern }) }
           }
         } catch {
-          return { type: 'error', msg: '错误的正则表达式' }
+          return { type: 'error', msg: t(msg => msg.dict.testResult.wrongRegular) }
         }
       }
-      return { type: 'error', msg: '字典在该网址下无效' }
+      return { type: 'error', msg: t(msg => msg.dict.testResult.wrongRegular) }
     }
 
     const handleTestResult = (result: TestResult) => {
@@ -82,7 +84,7 @@ const comp = defineComponent(
               {
                 modelValue: binding.targetUrl,
                 clearable: true,
-                placeholder: '输入网址判断词典是否生效：https://www.baidu.com/?q=xxx',
+                placeholder: t(msg => msg.dict.msg.testUrlPlaceholder),
                 onInput: updateTargetUrl,
                 onKeyup: (event: KeyboardEvent) => event.code === 'Enter' && handleTestResult(test()),
                 onClear: () => updateTargetUrl('')
@@ -92,13 +94,13 @@ const comp = defineComponent(
                 append: () => [
                   h(ElButton, {
                     icon: 'el-icon-search', onClick: () => handleTestResult(test())
-                  }, () => '测试'),
+                  }, () => t(msg => msg.dict.button.test)),
                   h(ElButton,
                     {
                       icon: 'el-icon-document-copy',
                       onClick: () => readClipboard().then(updateTargetUrl)
                     },
-                    () => '粘贴'
+                    () => t(msg => msg.dict.button.paste)
                   )
                 ]
               }

@@ -4,7 +4,8 @@ import { getDefaultMask, getRealMask } from '../../../common/default-word'
 import './style/word'
 import BannedWordDb from '../../../database/dictionary-db'
 import XGFLFG from '../../..'
-import { unreactive } from '../../../common/vue3-extent'
+import { nonreactive } from '../../../common/vue3-extent'
+import { t } from '../../locale'
 
 interface Props {
   dict: XGFLFG.Dictionary
@@ -25,7 +26,7 @@ const saveWord = (_ctx: any) => {
   const origin = _ctx.formData.origin
   const words = _ctx.dict.words
   if (!origin) {
-    ElMessage.error('未填写敏感词')
+    ElMessage.error(t(msg => msg.dict.msg.noOriginWordError))
     return
   }
 
@@ -33,7 +34,7 @@ const saveWord = (_ctx: any) => {
 
   const update = () => {
     words[origin] = current
-    db.update(unreactive(_ctx.dict) as XGFLFG.Dictionary).then(() => {
+    db.update(nonreactive(_ctx.dict) as XGFLFG.Dictionary).then(() => {
       _ctx.formData.origin = _ctx.formData.mask = ''
       _ctx.$refs.originInput.focus()
     })
@@ -42,9 +43,13 @@ const saveWord = (_ctx: any) => {
   const existing = words[origin]
   if (existing) {
     ElMessageBox.confirm(
-      `敏感词[${origin}]已存在，是否将原安全词[${existing.mask}]替换成[${current.mask}]?`, '操作提示', { confirmButtonText: '替换', cancelButtonText: '放弃' }
-    ).then(update)
-      .catch(() => ElMessage.info("取消保存"))
+      t(msg => msg.dict.msg.wordExistConfirmation, { word: origin, oldMask: existing.mask, newMask: current.mask }),
+      t(msg => msg.dict.msg.operationConfirmation),
+      {
+        confirmButtonText: t(msg => msg.dict.button.replace),
+        cancelButtonText: t(msg => msg.dict.button.giveUp)
+      }
+    ).then(update).catch(() => { })
   } else {
     update()
   }
@@ -73,7 +78,7 @@ export default defineComponent({
     delete(origin: string) {
       delete this.dict.words[origin]
       db.update(this.dict).then(() => {
-        ElMessage.success(`违禁词[${origin}]删除成功！`)
+        ElMessage.success(t(msg => msg.dict.msg.wordDeleteConfirmMsg, { word: origin }))
       })
     },
     closeInput() {
@@ -113,7 +118,7 @@ export default defineComponent({
       inputArea.push(
         h(ElInput, {
           modelValue: _ctx.formData.origin,
-          placeholder: '敏感词',
+          placeholder: t(msg => msg.item.word.original),
           clearable: true,
           size: 'mini',
           ref: 'originInput',
@@ -126,7 +131,7 @@ export default defineComponent({
           ElInput,
           {
             modelValue: _ctx.formData.mask,
-            placeholder: '安全词',
+            placeholder: t(msg => msg.item.word.mask),
             clearable: true,
             size: 'mini',
             onClear: () => (_ctx.formData.mask = ''),
@@ -159,7 +164,7 @@ export default defineComponent({
           size: 'mini',
           onClick: _ctx.showInput
         },
-        { default: () => '新增' }
+        { default: () => t(msg => msg.dict.button.add) }
       )
     }
 
