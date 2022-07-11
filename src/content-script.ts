@@ -23,7 +23,7 @@ const host = window.location.host
 const href = window.location.href
 
 if (!filter(host, href)) {
-    service.listWordsBy(host, href, words => {
+    service.listWords(host, href).then(words => {
         if (words.length) {
             const regWords: XGFLFG.BannedWordUseReg[] = words
                 .map(word => {
