@@ -77,7 +77,7 @@ export default defineComponent({
     delete(origin: string) {
       delete this.dict.words[origin]
       db.update(this.dict).then(() => {
-        ElMessage.success(t(msg => msg.dict.msg.wordDeleteConfirmMsg, { word: origin }))
+        ElMessage.success(t(msg => msg.dict.msg.wordDeleteConfirmMsg, { origin }))
       })
     },
     closeInput() {
