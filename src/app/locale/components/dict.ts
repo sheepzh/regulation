@@ -17,6 +17,8 @@ export type DictMessage = {
         paste: string
         test: string
         replace: string
+        addScope: string
+        addWord: string
     }
     msg: {
         nameBlankError: string
@@ -60,7 +62,9 @@ const _default: Messages<DictMessage> = {
             giveUp: '放弃',
             paste: '粘贴',
             test: '测试',
-            replace: '替换'
+            replace: '替换',
+            addScope: '新增范围',
+            addWord: '新增违禁词',
         },
         msg: {
             nameBlankError: '词典名称不能为空',
@@ -102,7 +106,9 @@ const _default: Messages<DictMessage> = {
             giveUp: 'Give up',
             paste: 'Paste',
             test: 'Test',
-            replace: 'Replace'
+            replace: 'Replace',
+            addScope: 'New one',
+            addWord: 'New word',
         },
         msg: {
             nameBlankError: 'The name can\'t be blank!',
