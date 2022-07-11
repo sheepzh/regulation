@@ -1,4 +1,4 @@
-import { Messages } from "../../../util/i18n"
+import { Messages } from "@util/i18n"
 
 export type MenuMessage = {
     dictionary: string

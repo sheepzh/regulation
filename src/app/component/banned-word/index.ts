@@ -2,11 +2,11 @@ import { ElButton, ElLink, ElMessage, ElSpace } from 'element-plus'
 import { defineComponent, h, Ref, ref } from 'vue'
 import ListTable from './list-table'
 import DictEdit from './dict-edit'
-import { checkJSON } from '../../../util/file-util'
+import { checkJSON } from "@util/file-util"
 import DictionaryDb from '../../../database/dictionary-db'
 import { t } from '../../locale'
-import { FEEDBACK_LINK } from '../../../util/constant/link'
-import { locale } from '../../../util/i18n'
+import { FEEDBACK_LINK } from "@util/constant/link"
+import { locale } from "@util/i18n"
 
 const db: DictionaryDb = new DictionaryDb(chrome.storage.local)
 

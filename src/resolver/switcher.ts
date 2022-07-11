@@ -1,5 +1,5 @@
 import { ORIGIN_TEXT_ATTR_NAME, REPLACED_CLASS_NAME } from "../constant/element"
-import { t2Chrome } from "../util/i18n/chrome/t"
+import { t2Chrome } from "@util/i18n/chrome/t"
 import Context from "./context"
 
 const SHOW = t2Chrome(msg => msg.restore.restoreButton)

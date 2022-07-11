@@ -1,10 +1,10 @@
-import { Messages } from '../../util/i18n'
+import { Messages } from "@util/i18n"
 import dictMessages, { DictMessage } from './components/dict'
 import itemMessages, { ItemMessage } from './components/item'
 import menuMessages, { MenuMessage } from './components/menu'
 import settingMessages, { SettingMessage } from './components/setting'
-import chromeAppMessages, { AppMessage as ChromeAppMessage } from '../../util/i18n/components/app'
-import restoreMessages, { RestoreMessage } from '../../util/i18n/components/restore'
+import chromeAppMessages, { AppMessage as ChromeAppMessage } from "@util/i18n/components/app"
+import restoreMessages, { RestoreMessage } from "@util/i18n/components/restore"
 
 export type AppMessage = {
     menu: MenuMessage

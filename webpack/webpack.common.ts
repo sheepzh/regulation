@@ -3,8 +3,33 @@ import GenerateJsonPlugin from 'generate-json-webpack-plugin'
 import CopyWebpackPlugin from 'copy-webpack-plugin'
 import webpack from 'webpack'
 import i18nChrome from '../src/util/i18n/chrome'
-
+import tsConfig from '../tsconfig.json'
 import manifest from '../src/manifest'
+
+const tsPathAlias = tsConfig.compilerOptions.paths
+
+// Process the alias of typescript modules
+const resolveAlias: { [index: string]: string | false | string[] } = {}
+const aliasPattern = /^(@.*)\/\*$/
+const sourcePattern = /^(src(\/.*)?)\/\*$/
+Object.entries(tsPathAlias).forEach(([alias, sourceArr]) => {
+    // Only process the alias starts with '@'
+    if (!aliasPattern.test(alias)) {
+        return
+    }
+    if (!sourceArr.length) {
+        return
+    }
+    const index = alias.match(aliasPattern)[1]
+    const webpackSourceArr = sourceArr
+        .filter(source => sourcePattern.test(source))
+        // Only set alias which is in /src folder
+        .map(source => source.match(sourcePattern)[1])
+        .map(folder => path.resolve(__dirname, '..', folder))
+    resolveAlias[index] = webpackSourceArr
+})
+console.log("Alias of typescript: ")
+console.log(resolveAlias)
 
 const optionGenerator = (outputPath: string, manifestHooker?: (manifest: any) => void) => {
     manifestHooker && manifestHooker(manifest)
@@ -67,6 +92,7 @@ const optionGenerator = (outputPath: string, manifestHooker?: (manifest: any) =>
         },
         resolve: {
             extensions: [".tsx", '.ts', ".js", '.css', '.scss'],
+            alias: resolveAlias,
         }
     }
     return config

@@ -6,7 +6,22 @@
         "sourceMap": true,
         "resolveJsonModule": true,
         "importHelpers": true,
-        "moduleResolution": "node"
+        "moduleResolution": "node",
+        "baseUrl": "./",
+        "paths": {
+            "@app/*": [
+                "src/app/*"
+            ],
+            "@util/*": [
+                "src/util/*"
+            ],
+            "@service/*": [
+                "src/service/*"
+            ],
+            "*": [
+                "types/*"
+            ]
+        }
     },
     "lib": [
         "dom"

@@ -15,7 +15,7 @@ import Scope from './scope'
 import DictionaryDb from '../../../database/dictionary-db'
 import ScopeList from './scope-list'
 import { nonreactive } from '../../../common/vue3-extent'
-import { saveJSON } from '../../../util/file-util'
+import { saveJSON } from "@util/file-util"
 import { t } from '../../locale'
 
 const db: DictionaryDb = new DictionaryDb(chrome.storage.local)
