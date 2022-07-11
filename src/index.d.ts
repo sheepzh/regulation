@@ -11,7 +11,7 @@ declare namespace XGFLFG {
      */
     type BannedWord = {
         /**
-         * The origin word which is excpected to be banned
+         * The origin word which is expected to be banned
          */
         origin: string
 
@@ -25,7 +25,7 @@ declare namespace XGFLFG {
 
     type BannedWordUseReg = {
         /**
-         * The origin word which is excpected to be banned
+         * The origin word which is expected to be banned
          */
         origin: RegExp
 
