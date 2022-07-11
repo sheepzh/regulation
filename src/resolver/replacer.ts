@@ -1,4 +1,3 @@
-import XGFLFG from ".."
 import { ORIGIN_TEXT_ATTR_NAME, REPLACED_CLASS_NAME } from "../constant/element"
 import Context from "./context"
 import mergeChildren from "./merger"

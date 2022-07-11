@@ -1,12 +1,11 @@
+import type { SetupContext, UnwrapRef, VNode } from "vue"
 
 import { ElAlert, ElInput, ElCol, ElRow, ElButton } from "element-plus"
-import { defineComponent, h, reactive, SetupContext, UnwrapRef, VNode, watchEffect } from "vue"
+import { defineComponent, h, reactive, watchEffect } from "vue"
 import { read as readClipboard } from 'clipboardy'
 import { matchScope } from "../../../common/matcher"
 import Url from 'url-parse'
-import XGFLFG from "../../.."
 import { t } from "../../locale"
-import { DictMessage } from '../../locale/components/dict'
 
 const url2Host = (urlStr: string) => {
   const url = Url(urlStr)

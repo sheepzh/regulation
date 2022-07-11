@@ -1,5 +1,3 @@
-import XGFLFG from ".."
-
 /**
  * Determines whether the scope match the host and href
  * 

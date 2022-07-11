@@ -1,7 +1,6 @@
 import { defineComponent, h, reactive } from 'vue'
 import { ElButton, ElDialog, ElInput, ElMessage } from 'element-plus'
 import './style/dict-add'
-import XGFLFG from '../../..'
 import DictionaryDb from '../../../database/dictionary-db'
 import { nonreactive as nonreactive } from '../../../common/vue3-extent'
 import { t } from '../../locale'

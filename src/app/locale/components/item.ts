@@ -1,4 +1,3 @@
-import XGFLFG from "../../.."
 import { Messages } from "../../../util/i18n"
 
 export type ItemMessage = {

@@ -81,5 +81,3 @@ declare namespace XGFLFG {
 
     type ScopeType = 'host' | 'url'
 }
-
-export default XGFLFG

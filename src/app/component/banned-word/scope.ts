@@ -1,5 +1,4 @@
 import { defineComponent, h, reactive } from 'vue'
-import XGFLFG from '../../..'
 import ScopeTest, { ScopeTestProps } from './scope-test'
 import ScopeAdd from './scope-add'
 import ScopeList from './scope-list'

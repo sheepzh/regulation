@@ -1,4 +1,3 @@
-import XGFLFG from ".."
 const { version } = require('../../package.json')
 
 const versionField = '_version'

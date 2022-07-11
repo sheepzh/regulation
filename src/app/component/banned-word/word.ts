@@ -3,7 +3,6 @@ import { ElButton, ElInput, ElMessage, ElMessageBox, ElTag } from 'element-plus'
 import { getDefaultMask, getRealMask } from '../../../common/default-word'
 import './style/word'
 import BannedWordDb from '../../../database/dictionary-db'
-import XGFLFG from '../../..'
 import { nonreactive } from '../../../common/vue3-extent'
 import { t } from '../../locale'
 

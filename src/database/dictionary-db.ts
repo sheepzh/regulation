@@ -1,4 +1,3 @@
-import XGFLFG from '..'
 import BaseDb from './common/base-db'
 
 const KEY = '_DICT_'

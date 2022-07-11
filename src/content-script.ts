@@ -1,4 +1,3 @@
-import XGFLFG from '.'
 import SettingDb from './database/setting-db'
 import Context from './resolver/context'
 import filter from './resolver/filter'

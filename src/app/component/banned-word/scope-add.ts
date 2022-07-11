@@ -1,7 +1,6 @@
 import { ElButton, ElInput, ElOption, ElRow, ElSelect, ElSwitch, ElTooltip, ElCol, ElMessage } from 'element-plus'
 import { defineComponent, h, reactive } from 'vue'
 import { read as readClipboard } from 'clipboardy'
-import XGFLFG from '../../..'
 import { t } from '../../locale'
 
 const inputRef = 'scopeInput'

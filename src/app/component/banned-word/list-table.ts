@@ -10,7 +10,6 @@ import {
   ElTooltip
 } from 'element-plus'
 import { defineComponent, h, reactive } from 'vue'
-import XGFLFG from '../../..'
 import Word from './word'
 import Scope from './scope'
 import DictionaryDb from '../../../database/dictionary-db'

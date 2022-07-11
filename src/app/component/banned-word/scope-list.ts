@@ -1,6 +1,5 @@
 import { ElTag, ElTooltip } from 'element-plus'
 import { defineComponent, h, reactive } from 'vue'
-import XGFLFG from '../../..'
 import { t } from '../../locale'
 
 export default defineComponent({

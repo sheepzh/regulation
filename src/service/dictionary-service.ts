@@ -1,4 +1,3 @@
-import XGFLFG from '..'
 import { matchScope } from '../common/matcher'
 import DictionaryDb from '../database/dictionary-db'
 
