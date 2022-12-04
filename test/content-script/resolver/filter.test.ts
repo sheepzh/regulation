@@ -1,4 +1,4 @@
-import filter from "../../src/resolver/filter"
+import filter from "@script/resolver/filter"
 
 test('testFilter-github', () => {
     // Filter while editing file on github

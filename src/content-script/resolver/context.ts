@@ -14,7 +14,7 @@ export default class Context {
      * Key of node, which is stored in the attribute named [ORIGIN_TEXT_ATTR_NAME]
      */
     nodeKey = 0
-    container: Map<string, ContentResult> = new Map
+    container: Map<string, ContentResult> = new Map()
 
     /**
      * Set the value of node key and increase 
@@ -28,10 +28,10 @@ export default class Context {
         this.container.set(nodeKey, result)
     }
 
-    get(nodeKey: string, indexOfChildren: number) {
+    get(nodeKey: string, indexOfChildren: number): ContextResultItem {
         const item: ContentResult | undefined = this.container.get(nodeKey)
         if (!item) return null
-        return item[indexOfChildren] || null
+        return item[indexOfChildren]
     }
 
     getOrigin(nodeKey: string, indexOfChildren: number): string {
@@ -39,12 +39,12 @@ export default class Context {
         return result ? result.origin || '' : ''
     }
 
-    getReplaced(nodeKey: string, indexOfChildren: number) {
+    getReplaced(nodeKey: string, indexOfChildren: number): string {
         const result = this.get(nodeKey, indexOfChildren)
         return result ? result.replaced || '' : ''
     }
 
-    increaseKey() {
+    increaseKey(): string {
         return String(this.nodeKey++)
     }
 }

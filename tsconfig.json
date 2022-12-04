@@ -18,8 +18,8 @@
             "@service/*": [
                 "src/service/*"
             ],
-            "@resolver/*": [
-                "src/resolver/*"
+            "@script/*": [
+                "src/content-script/*"
             ],
             "@src/*": [
                 "src/*"
