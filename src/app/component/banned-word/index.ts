@@ -7,6 +7,7 @@ import DictionaryDb from '../../../database/dictionary-db'
 import { t } from '../../locale'
 import { FEEDBACK_LINK } from "@util/constant/link"
 import { locale } from "@util/i18n"
+import { DocumentCopy, Plus } from "@element-plus/icons-vue"
 
 const db: DictionaryDb = new DictionaryDb(chrome.storage.local)
 
@@ -19,80 +20,73 @@ const tableRef = ref()
 
 // Handle after the file to import is selected
 function handleFileSelected() {
-  const files: FileList | null = fileInputRef.value.files
-  if (!files || !files.length) {
-    return
-  }
-  const file: File = files[0]
-  file.text()
-    .then(str => checkJSON(str))
-    .then(dict => db.import(dict))
-    .then(() => {
-      ElMessage.success(t(msg => msg.dict.msg.importedSuccessfully))
-      tableRef.value.query()
-    })
-    .catch(ElMessage.error)
+    const files: FileList | null = fileInputRef.value.files
+    if (!files || !files.length) {
+        return
+    }
+    const file: File = files[0]
+    file.text()
+        .then(str => checkJSON(str))
+        .then(dict => db.import(dict))
+        .then(() => {
+            ElMessage.success(t(msg => msg.dict.msg.importedSuccessfully))
+            tableRef.value.query()
+        })
+        .catch(ElMessage.error)
 }
 
-const addButton = () => h(
-  ElButton,
-  {
-    size: 'small',
-    type: 'primary',
-    icon: 'el-icon-plus',
-    onClick: () => editRef.value.add()
-  },
-  { default: () => t(msg => msg.dict.button.add) }
+const addButton = () => h(ElButton,
+    {
+        type: 'primary',
+        icon: Plus,
+        onClick: () => editRef.value.add()
+    },
+    () => t(msg => msg.dict.button.add)
 )
 
 // Input with file type, which hide in the import button
-const fileInputProps = {
-  ref: fileInputRef,
-  type: 'file',
-  accept: '.json',
-  style: { display: 'none' },
-  onChange: handleFileSelected
-}
-const fileInput = () => h('input', fileInputProps)
+const fileInput = () => h('input', {
+    ref: fileInputRef,
+    type: 'file',
+    accept: '.json',
+    style: { display: 'none' },
+    onChange: handleFileSelected
+})
 
-const importButtonProps = {
-  size: 'small',
-  type: 'primary',
-  icon: 'el-icon-document-copy',
-  onClick: () => fileInputRef.value.click()
-}
-const importButton = () => h(ElButton, importButtonProps,
-  { default: () => [t(msg => msg.dict.button.import), fileInput()] }
-)
+const importButton = () => h(ElButton, {
+    type: 'primary',
+    icon: DocumentCopy,
+}, () => [t(msg => msg.dict.button.import), fileInput()])
 
 const feedbackLink = () => h(ElLink,
-  {
-    icon: "el-icon-edit-outline",
-    href: FEEDBACK_LINK,
-    target: '_blank'
-  },
-  () => t(msg => msg.dict.button.feedback)
+    {
+        icon: "el-icon-edit-outline",
+        href: FEEDBACK_LINK,
+        target: '_blank'
+    },
+    () => t(msg => msg.dict.button.feedback)
 )
 
 const filterItems = () => {
-  const result = [addButton(), importButton()]
-  locale === 'zh_CN' && result.push(feedbackLink())
-  return result
+    const result = [addButton(), importButton()]
+    locale === 'zh_CN' && result.push(feedbackLink())
+    return result
 }
 
 const children = () => [
-  h(
-    'div',
-    { class: 'filter-container' },
-    h(ElSpace, { size: 'large' }, filterItems())
-  ),
-  h(ListTable, { ref: tableRef, onEdit: (row: XGFLFG.Dictionary) => editRef.value.edit(row) }),
-  h(DictEdit, {
-    ref: editRef,
-    onSaved: () => tableRef.value.query()
-  })
+    h(
+        'div',
+        { class: 'filter-container' },
+        h(ElSpace, { size: 'large' }, () => filterItems())
+    ),
+    h(ListTable, { ref: tableRef, onEdit: (row: XGFLFG.Dictionary) => editRef.value.edit(row) }),
+    h(DictEdit, {
+        ref: editRef,
+        onSaved: () => tableRef.value.query()
+    })
 ]
 
-export default defineComponent(() => {
-  return () => h('div', { class: 'app-container' }, children())
-})
+export default defineComponent(() => () => h('div',
+    { class: 'app-container' },
+    children()
+))

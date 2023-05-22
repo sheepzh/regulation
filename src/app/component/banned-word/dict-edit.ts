@@ -1,118 +1,107 @@
-import { defineComponent, h, reactive } from 'vue'
+import { defineComponent, h, ref, Ref } from 'vue'
 import { ElButton, ElDialog, ElInput, ElMessage } from 'element-plus'
 import './style/dict-add'
 import DictionaryDb from '../../../database/dictionary-db'
-import { nonreactive as nonreactive } from '../../../common/vue3-extent'
 import { t } from '../../locale'
-
-interface Props {
-  isOpen: boolean
-  formData: XGFLFG.Dictionary
-  title: string
-}
+import { Close, Check } from "@element-plus/icons-vue"
 
 const db: DictionaryDb = new DictionaryDb(chrome.storage.local)
 
-export default defineComponent({
-  name: 'dict-edit',
-  emits: ['saved'],
-  methods: {
-    add() {
-      this.title = t(msg => msg.dict.button.add)
-      this.isOpen = true
-    },
-    edit(row: XGFLFG.Dictionary) {
-      this.title = t(msg => msg.dict.button.edit)
-      this.formData = row
-      this.isOpen = true
-    },
-    save() {
-      const data: XGFLFG.Dictionary = nonreactive(this.formData) as XGFLFG.Dictionary
-      if (!data.name) {
-        ElMessage.error(t(msg => msg.dict.msg.nameBlankError))
-      } else {
-        // Update if ID exists, or add it
-        const toDo: (dict: XGFLFG.Dictionary) => Promise<void> = data.id ? data => db.update(data) : data => db.add(data)
+async function save(data: XGFLFG.Dictionary): Promise<boolean> {
+    // Update if ID exists, or add it
+    const toDo: (dict: XGFLFG.Dictionary) => Promise<void> = data.id ? data => db.update(data) : data => db.add(data)
+    await toDo(data)
+    ElMessage.success(t(msg => msg.dict.msg.savedSuccessfully))
+    return true
+}
 
-        toDo(data).then(() => {
-          ElMessage.success(t(msg => msg.dict.msg.savedSuccessfully)),
-            this.$emit('saved', data)
+const renderForm = (formName: Ref<string>, formRemark: Ref<string>) => h('div', [
+    h(ElInput, {
+        placeholder: t(msg => msg.item.name),
+        modelValue: formName.value,
+        onInput: (val: string) => formName.value = val.trim(),
+        onClear: () => formName.value = formRemark.value = '',
+        clearable: true,
+        class: 'dict-field'
+    }),
+    h(ElInput, {
+        type: 'textarea',
+        rows: 4,
+        class: 'dict-field',
+        placeholder: t(msg => msg.item.remark),
+        modelValue: formRemark.value,
+        onInput: (val: string) => formRemark.value = val.trim(),
+        clearable: true,
+        onClear: () => formRemark.value = ''
+    })
+])
 
-          // Clear all the form items
-          this.formData.name = this.formData.remark = ''
-          this.isOpen = false
+const renderFooter = (handleSave: () => void, handleClose: () => void) => h('div', { style: 'text-align:center' }, [
+    h(ElButton, {
+        type: 'success',
+        size: 'small',
+        icon: Check,
+        onClick: handleSave,
+    }, () => t(msg => msg.dict.button.confirm)),
+    h(ElButton, {
+        icon: Close,
+        size: 'small',
+        onClick: () => handleClose()
+    }, () => t(msg => msg.dict.button.cancel))
+])
+
+const _default = defineComponent({
+    emits: {
+        save: (_name: string, _remark: string) => true
+    },
+    setup(_, ctx) {
+        const title: Ref<string> = ref()
+        const open: Ref<boolean> = ref(false)
+        const formName: Ref<string> = ref()
+        const formRemark: Ref<string> = ref()
+        let currentRow: XGFLFG.Dictionary = undefined
+        const init = (row?: XGFLFG.Dictionary) => {
+            currentRow = row
+            formName.value = row?.name || ''
+            formRemark.value = row?.remark || ''
+            open.value = true
+        }
+        ctx.expose({
+            add: () => {
+                title.value = t(msg => msg.dict.button.add)
+                init()
+            },
+            edit(row: XGFLFG.Dictionary) {
+                title.value = t(msg => msg.dict.button.edit)
+                init(row)
+            }
         })
-      }
+        const handleSave = async () => {
+            const name = formName.value
+            const remark = formName.value
+            if (!name) {
+                ElMessage.error(t(msg => msg.dict.msg.nameBlankError))
+                return
+            }
+            const saved = await save({ ...currentRow, name, remark })
+            if (saved) {
+                ctx.emit('save', name, remark)
+                // Clear all the form items
+                formName.value = formRemark.value = ''
+                open.value = false
+            }
+        }
+        return () => h(ElDialog, {
+            title: title.value,
+            closeOnClickModal: false,
+            width: 400,
+            modelValue: open.value,
+            onClosed: () => open.value = false
+        }, {
+            default: () => renderForm(formName, formRemark),
+            footer: () => renderFooter(handleSave, () => open.value = false),
+        })
     }
-  },
-  setup() {
-    return reactive({
-      isOpen: false,
-      formData: {
-        name: '',
-        remark: ''
-      },
-      title: '',
-    } as Props)
-  },
-  render(_ctx: any) {
-    const dialogBody = () =>
-      h('div', [
-        h(ElInput, {
-          placeholder: t(msg => msg.item.name),
-          modelValue: _ctx.formData.name,
-          onInput: (val: string) => (_ctx.formData.name = val.trim()),
-          onClear: () => (_ctx.formData.name = _ctx.formData.remark = ''),
-          clearable: true,
-          class: 'dict-field'
-        }),
-        h(ElInput, {
-          type: 'textarea',
-          rows: 4,
-          class: 'dict-field',
-          placeholder: t(msg => msg.item.remark),
-          modelValue: _ctx.formData.remark,
-          onInput: (val: string) => (_ctx.formData.remark = val.trim()),
-          clearable: true,
-          onClear: () => (_ctx.formData.remark = '')
-        })
-      ])
-    const dialogFooter = () =>
-      h('div', { style: 'text-align:center' }, [
-        h(
-          ElButton,
-          {
-            type: 'success',
-            size: 'mini',
-            icon: 'el-icon-check',
-            onClick: _ctx.save
-          },
-          () => t(msg => msg.dict.button.confirm)
-        ),
-        h(
-          ElButton,
-          {
-            icon: 'el-icon-close',
-            size: 'mini',
-            onClick: () => (_ctx.isOpen = false)
-          },
-          () => t(msg => msg.dict.button.cancel)
-        )
-      ])
-
-    return h(
-      ElDialog,
-      {
-        title: _ctx.title,
-        closeOnClickModal: false,
-        width: 400,
-        modelValue: _ctx.isOpen,
-        onClosed: () => (_ctx.isOpen = false)
-      },
-      {
-        default: dialogBody,
-        footer: dialogFooter
-      }
-    )
-  }
 })
+
+export default _default

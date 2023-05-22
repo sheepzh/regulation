@@ -1,14 +1,8 @@
-export enum Locale {
-    ZH_CN = 'zh_CN',
-    EN = 'en'
-}
+export type Locale = 'zh_CN' | 'en'
 
-/**
- * @since 0.2.2
- */
-const FEEDBACK_LOCALE = Locale.EN
+const FEEDBACK_LOCALE: Locale = 'en'
 
-export const defaultLocale = Locale.ZH_CN
+export const defaultLocale: Locale = 'zh_CN'
 
 export type Messages<T> = {
     [key in Locale]: T
@@ -16,10 +10,11 @@ export type Messages<T> = {
 
 // Standardize the locale code according to the Chrome locale code
 const chrome2I18n: { [key: string]: Locale } = {
-    'zh-CN': Locale.ZH_CN,
-    'zh-TW': Locale.ZH_CN,
-    'en-US': Locale.EN,
-    'en-GB': Locale.EN
+    'zh-CN': 'zh_CN',
+    'zh-TW': 'zh_CN',
+    'en-US': 'en',
+    'en-GB': 'en',
+    'en': 'en',
 }
 
 /**

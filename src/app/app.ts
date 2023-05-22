@@ -4,11 +4,11 @@ import { RouterView } from 'vue-router'
 import AsideMenu from './layout/aside-menu'
 
 export default defineComponent((_props: Readonly<{}>, _ctx: SetupContext<EmitsOptions>) => {
-  return () => h(ElContainer, {},
-    () => [
-      h(ElAside, {}, () => h(AsideMenu)),
-      h(ElContainer, { id: 'app-body' }, () =>
-        h(ElMain, {}, () => h(RouterView))
-      )
-    ])
+    return () => h(ElContainer, {},
+        () => [
+            h(ElAside, {}, () => h(AsideMenu)),
+            h(ElContainer, { id: 'app-body' }, () =>
+                h(ElMain, {}, () => h(RouterView))
+            )
+        ])
 })
