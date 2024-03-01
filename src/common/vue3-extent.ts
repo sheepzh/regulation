@@ -3,11 +3,11 @@
  * 
  * @param proxy 
  */
-export function nonreactive(proxy: Object): Object {
-    const obj = new Object()
+export function nonreactive<T extends Record<string, any>>(proxy: T): T {
+    const obj: Record<string, any> = {}
     for (const key in proxy) {
-        const proxyVal = proxy[key]
+        const proxyVal: any = proxy[key]
         obj[key] = proxyVal instanceof Object ? nonreactive(proxyVal) : proxyVal
     }
-    return obj
+    return obj as T
 }

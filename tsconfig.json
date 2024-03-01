@@ -2,6 +2,10 @@
     "compilerOptions": {
         "module": "commonjs",
         "target": "es5",
+        "jsx": "preserve",
+        "jsxFactory": "h",
+        "jsxImportSource": "vue",
+        "jsxFragmentFactory": "Fragment",
         "esModuleInterop": true,
         "sourceMap": true,
         "resolveJsonModule": true,
@@ -17,6 +21,12 @@
             ],
             "@service/*": [
                 "src/service/*"
+            ],
+            "@common/*": [
+                "src/common/*"
+            ],
+            "@db/*": [
+                "src/database/*"
             ],
             "@script/*": [
                 "src/content-script/*"

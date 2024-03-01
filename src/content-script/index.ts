@@ -59,7 +59,7 @@ async function main() {
     const observer = generateDocumentObserver(replacer)
 
     observer.observe(document, config)
-    window.onunload = observer.disconnect
+    window.addEventListener("load", observer.disconnect)
 
     processSwitcher()
 }

@@ -1,8 +1,8 @@
 import './style/index'
 import { createApp } from 'vue'
-import AppMain from './app'
+import App from './App'
 import 'element-plus/theme-chalk/index.css'
-import installRouter from './router'
+import router from './router'
 import { t2Chrome } from "@util/i18n/chrome/t"
 import { Locale, locale } from '@util/i18n'
 import ElementPlus from "element-plus"
@@ -13,9 +13,9 @@ const locales: { [locale in Locale]: any } = {
 }
 
 function main() {
-    const app = createApp(AppMain)
+    const app = createApp(App)
     document.title = t2Chrome(msg => msg.app.name)
-    installRouter(app)
+    app.use(router)
     app.mount('#app')
     app.use(ElementPlus, { locale: locales[locale].default })
 }

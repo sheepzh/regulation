@@ -1,4 +1,4 @@
-import { defineComponent, h, reactive } from 'vue'
+import { defineComponent, h, reactive, unref } from 'vue'
 import { ElButton, ElInput, ElMessage, ElMessageBox, ElTag } from 'element-plus'
 import { getDefaultMask, getRealMask } from '../../../common/default-word'
 import './style/word'
@@ -32,12 +32,12 @@ const saveWord = (_ctx: any) => {
 
     const current = { origin, mask: getRealMask(origin, _ctx.formData.mask) }
 
-    const update = () => {
+    const update = async () => {
         words[origin] = current
-        db.update(nonreactive(_ctx.dict) as XGFLFG.Dictionary).then(() => {
-            _ctx.formData.origin = _ctx.formData.mask = ''
-            _ctx.$refs.originInput.focus()
-        })
+
+        await db.update(unref(_ctx.dict))
+        _ctx.formData.origin = _ctx.formData.mask = ''
+        _ctx.$refs.originInput.focus()
     }
 
     const existing = words[origin]

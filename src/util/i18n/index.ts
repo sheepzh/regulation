@@ -48,7 +48,7 @@ export type TranslateProps<MessageType> = {
  * Translate
  * @param key     keyPath 
  * @param param   param
- * @returns string or vnodes[]
+ * @returns string or VNodes[]
  */
 export function t<MessageType>(messages: MessageType, props: TranslateProps<MessageType>): string {
     const { key, param } = props

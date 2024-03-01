@@ -69,10 +69,13 @@ const optionGenerator = (outputPath: string, manifestHooker?: (manifest: any) =>
                 {
                     test: /\.tsx$/,
                     exclude: '/node_modules/',
-                    use: [
-                        'babel-loader',
-                        'ts-loader'
-                    ]
+                    use: [{
+                        loader: 'babel-loader',
+                        options: {
+                            presets: ["@babel/preset-env"],
+                            plugins: ["@vue/babel-plugin-jsx", "@babel/plugin-transform-modules-commonjs"],
+                        },
+                    }, 'ts-loader'],
                 },
                 {
                     test: /\.css$/,
@@ -91,7 +94,7 @@ const optionGenerator = (outputPath: string, manifestHooker?: (manifest: any) =>
             ]
         },
         resolve: {
-            extensions: [".tsx", '.ts', ".js", '.css', '.scss'],
+            extensions: [".tsx", '.ts', '.tsx', '.js', '.css', '.scss'],
             alias: resolveAlias,
         }
     }

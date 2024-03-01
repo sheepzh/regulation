@@ -1,8 +1,8 @@
 import { defineComponent, h, ref, Ref } from 'vue'
 import { ElButton, ElDialog, ElInput, ElMessage } from 'element-plus'
 import './style/dict-add'
-import DictionaryDb from '../../../database/dictionary-db'
-import { t } from '../../locale'
+import DictionaryDb from '@db/dictionary-db'
+import { I18nKey, t } from '@app/locale'
 import { Close, Check } from "@element-plus/icons-vue"
 
 const db: DictionaryDb = new DictionaryDb(chrome.storage.local)
@@ -60,21 +60,16 @@ const _default = defineComponent({
         const formName: Ref<string> = ref()
         const formRemark: Ref<string> = ref()
         let currentRow: XGFLFG.Dictionary = undefined
-        const init = (row?: XGFLFG.Dictionary) => {
+        const init = (titleKey: I18nKey, row?: XGFLFG.Dictionary) => {
+            title.value = t(titleKey)
             currentRow = row
             formName.value = row?.name || ''
             formRemark.value = row?.remark || ''
             open.value = true
         }
         ctx.expose({
-            add: () => {
-                title.value = t(msg => msg.dict.button.add)
-                init()
-            },
-            edit(row: XGFLFG.Dictionary) {
-                title.value = t(msg => msg.dict.button.edit)
-                init(row)
-            }
+            add: () => init(msg => msg.dict.button.add),
+            edit: (row: XGFLFG.Dictionary) => init(msg => msg.dict.button.edit, row)
         })
         const handleSave = async () => {
             const name = formName.value
@@ -91,16 +86,19 @@ const _default = defineComponent({
                 open.value = false
             }
         }
-        return () => h(ElDialog, {
-            title: title.value,
-            closeOnClickModal: false,
-            width: 400,
-            modelValue: open.value,
-            onClosed: () => open.value = false
-        }, {
-            default: () => renderForm(formName, formRemark),
-            footer: () => renderFooter(handleSave, () => open.value = false),
-        })
+        return () => (
+            <ElDialog
+                title={title.value}
+                closeOnClickModal={false}
+                width={400}
+                modelValue={open.value}
+                onClose={() => open.value = false}
+                v-slots={{
+                    default: () => renderForm(formName, formRemark),
+                    footer: () => renderFooter(handleSave, () => open.value = false)
+                }}
+            />
+        )
     }
 })
 

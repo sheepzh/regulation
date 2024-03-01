@@ -1,6 +1,4 @@
-import { App } from 'vue'
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
-
 
 const routes: RouteRecordRaw[] = [
     {
@@ -8,20 +6,16 @@ const routes: RouteRecordRaw[] = [
         redirect: '/banned-word'
     }, {
         path: '/banned-word',
-        component: () => import('./component/banned-word')
+        component: () => import('./components/BannedWord')
     },
     {
         path: '/setting',
-        component: () => import('./component/setting')
+        component: () => import('./components/Setting')
     }
 ]
 
-const router = createRouter({
+export default createRouter({
     history: createWebHashHistory(),
     routes
 })
 
-
-export default function installRouter(app: App): void {
-    app.use(router)
-}

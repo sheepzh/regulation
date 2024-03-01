@@ -1,4 +1,4 @@
-const { version } = require('../../package.json')
+import { version } from '../../package.json'
 
 const versionField = '_version'
 
@@ -24,18 +24,18 @@ export function saveJSON(data: any, filename: string) {
  * @param jsonStr json 
  * @since 0.0.5
  */
-export function checkJSON(jsonStr: string) {
-    let dict: any
+export function checkJSON(jsonStr: string): XGFLFG.Dictionary {
+    let dict: XGFLFG.Dictionary
     try {
         dict = JSON.parse(jsonStr)
     } catch {
-        return Promise.reject('文件格式不正确')
+        return undefined
     }
 
     if (!dict.name) {
-        return Promise.reject('导入词典名称为空')
+        return undefined
     } else if (!dict[versionField]) {
-        return Promise.reject('软件版本信息不完整')
+        return undefined
     }
-    return Promise.resolve(dict as XGFLFG.Dictionary)
+    return dict
 }
