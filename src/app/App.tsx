@@ -6,7 +6,9 @@ import AsideMenu from './layout/AsideMenu'
 export default defineComponent((_props: Readonly<{}>, _ctx: SetupContext<EmitsOptions>) => {
     return () => (
         <ElContainer>
-            <ElAside>
+            <ElAside style={{
+                width: "240px"
+            }}>
                 <AsideMenu />
             </ElAside>
             <ElContainer>

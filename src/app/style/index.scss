@@ -1,8 +1,10 @@
 @import "./aside-menu.scss";
 
 body {
-    margin: 0 10%;
-    margin-top: 80px;
+    margin: 0px;
+    padding: 0px;
+    height: 100vh;
+    width: 100vw;
 }
 
 h2 {
@@ -19,7 +21,7 @@ a {
     line-height: 20px;
 }
 
-.el-main {
-    padding-top: 0 !important;
-    padding-left: 45px !important;
+:root {
+    --el-menu-text-color: var(--el-color-white) !important;
+    --el-main-padding: 45px;
 }

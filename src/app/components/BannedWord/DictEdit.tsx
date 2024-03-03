@@ -1,4 +1,4 @@
-import { defineComponent, h, ref, Ref } from 'vue'
+import { defineComponent, ref, Ref } from 'vue'
 import { ElButton, ElDialog, ElInput, ElMessage } from 'element-plus'
 import './style/dict-add'
 import DictionaryDb from '@db/dictionary-db'
@@ -14,41 +14,6 @@ async function save(data: XGFLFG.Dictionary): Promise<boolean> {
     ElMessage.success(t(msg => msg.dict.msg.savedSuccessfully))
     return true
 }
-
-const renderForm = (formName: Ref<string>, formRemark: Ref<string>) => h('div', [
-    h(ElInput, {
-        placeholder: t(msg => msg.item.name),
-        modelValue: formName.value,
-        onInput: (val: string) => formName.value = val.trim(),
-        onClear: () => formName.value = formRemark.value = '',
-        clearable: true,
-        class: 'dict-field'
-    }),
-    h(ElInput, {
-        type: 'textarea',
-        rows: 4,
-        class: 'dict-field',
-        placeholder: t(msg => msg.item.remark),
-        modelValue: formRemark.value,
-        onInput: (val: string) => formRemark.value = val.trim(),
-        clearable: true,
-        onClear: () => formRemark.value = ''
-    })
-])
-
-const renderFooter = (handleSave: () => void, handleClose: () => void) => h('div', { style: 'text-align:center' }, [
-    h(ElButton, {
-        type: 'success',
-        size: 'small',
-        icon: Check,
-        onClick: handleSave,
-    }, () => t(msg => msg.dict.button.confirm)),
-    h(ElButton, {
-        icon: Close,
-        size: 'small',
-        onClick: () => handleClose()
-    }, () => t(msg => msg.dict.button.cancel))
-])
 
 const _default = defineComponent({
     emits: {
@@ -74,10 +39,7 @@ const _default = defineComponent({
         const handleSave = async () => {
             const name = formName.value
             const remark = formName.value
-            if (!name) {
-                ElMessage.error(t(msg => msg.dict.msg.nameBlankError))
-                return
-            }
+            if (!name) return ElMessage.error(t(msg => msg.dict.msg.nameBlankError))
             const saved = await save({ ...currentRow, name, remark })
             if (saved) {
                 ctx.emit('save', name, remark)
@@ -94,8 +56,34 @@ const _default = defineComponent({
                 modelValue={open.value}
                 onClose={() => open.value = false}
                 v-slots={{
-                    default: () => renderForm(formName, formRemark),
-                    footer: () => renderFooter(handleSave, () => open.value = false)
+                    default: () => <div>
+                        <ElInput
+                            placeholder={t(msg => msg.item.name)}
+                            modelValue={formName.value}
+                            onInput={(val: string) => formName.value = val?.trim?.()}
+                            onClear={() => formName.value = formRemark.value = ''}
+                            clearable
+                            class="dict-field"
+                        />
+                        <ElInput
+                            type='textarea'
+                            class="dict-field"
+                            autosize={{ maxRows: 4, minRows: 4 }}
+                            placeholder={t(msg => msg.item.remark)}
+                            modelValue={formRemark.value}
+                            onInput={(val: string) => formRemark.value = val?.trim?.()}
+                            clearable
+                            onClear={() => formRemark.value = ''}
+                        />
+                    </div>,
+                    footer: () => <div style={{ textAlign: "center" }}>
+                        <ElButton type='success' size='small' icon={<Check />} onClick={handleSave}>
+                            {t(msg => msg.dict.button.confirm)}
+                        </ElButton>
+                        <ElButton icon={<Close />} size='small' onClick={() => open.value = false}>
+                            {t(msg => msg.dict.button.cancel)}
+                        </ElButton>
+                    </div>
                 }}
             />
         )

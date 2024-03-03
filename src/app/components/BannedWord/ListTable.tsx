@@ -1,19 +1,9 @@
-import {
-    ElTable,
-    ElTableColumn,
-    ElSwitch,
-    ElButton,
-    ElTag,
-    ElMessageBox,
-    ElMessage,
-    ElDialog,
-    ElTooltip
-} from 'element-plus'
-import { defineComponent, h, ref } from 'vue'
+import { ElTable, ElTableColumn, ElSwitch, ElButton, ElTag, ElMessageBox, ElMessage, ElDialog, ElTooltip } from 'element-plus'
+import { defineComponent, ref } from 'vue'
 import Word from './word'
-import Scope from './scope'
+import Scope from './Scope'
 import DictionaryDb from '@db/dictionary-db'
-import ScopeList from './scope-list'
+import ScopeList from './Scope/ScopeList'
 import { nonreactive } from '@common/vue3-extent'
 import { saveJSON } from "@util/file-util"
 import { t } from '@app/locale'
@@ -27,7 +17,7 @@ export type TableInstance = {
 const renderOperationButton = (
     name: string,
     onClick: () => void
-) => <ElButton type='text' size='small' onClick={onClick}>
+) => <ElButton link size='small' type='primary' onClick={onClick}>
         {name}
     </ElButton>
 
