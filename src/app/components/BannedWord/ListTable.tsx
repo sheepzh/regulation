@@ -1,6 +1,6 @@
 import { ElTable, ElTableColumn, ElSwitch, ElButton, ElTag, ElMessageBox, ElMessage, ElDialog, ElTooltip } from 'element-plus'
 import { defineComponent, ref } from 'vue'
-import Word from './word'
+import Word from './Word'
 import Scope from './Scope'
 import DictionaryDb from '@db/dictionary-db'
 import ScopeList from './Scope/ScopeList'
@@ -35,6 +35,8 @@ export default defineComponent({
 
         const query = () => db.listAll().then(val => list.value = val)
         query()
+        const instance: TableInstance = { query }
+        ctx.expose(instance)
 
         return () => (
             <div style={{ width: "100%", marginTop: "20px" }}>

@@ -9,8 +9,14 @@
   height: 28px;
 }
 
+.word-input-left,
+.word-input-right {
+  height: 28px;
+}
+
 .word-input-left {
   width: 120px;
+
   input {
     border-bottom-right-radius: 0px;
     border-top-right-radius: 0px;
@@ -19,14 +25,19 @@
 
 .word-input-right {
   width: 190px;
+
   input {
     border-bottom-left-radius: 0px;
     border-top-left-radius: 0px;
     border-left: none;
   }
+
   .el-input-group__append {
+    padding: 0 3px;
+
     button {
-      padding: 5px 12px;
+      padding: 0 3px;
+      margin: 0;
     }
   }
 }

@@ -1,7 +1,7 @@
 import { ElButton, ElLink, ElMessage, ElSpace } from 'element-plus'
-import { defineComponent, Ref, ref } from 'vue'
+import { defineComponent, ref } from 'vue'
 import ListTable, { TableInstance } from './ListTable'
-import DictEdit from './DictEdit'
+import DictEdit, { EditInstance } from './DictEdit'
 import { checkJSON } from "@util/file-util"
 import DictionaryDb from '@db/dictionary-db'
 import { t } from '@app/locale'
@@ -31,33 +31,37 @@ async function handleFileSelected(fileInput: HTMLInputElement, tableInstance: Ta
 }
 
 export default defineComponent(() => {
-    const editRef = ref()
-    const fileInputRef = ref() as Ref<HTMLInputElement>
-    const tableRef = ref()
+    const edit = ref<EditInstance>()
+    const fileInput = ref<HTMLInputElement>()
+    const table = ref<TableInstance>()
     return () => (
         <div class="app-container">
             <div class="filter-container">
                 <ElSpace size="large">
-                    <ElButton type="primary" icon={<Plus />} onClick={() => editRef.value?.add?.()}>
+                    <ElButton type="primary" icon={<Plus />} onClick={() => edit.value?.add?.()}>
                         {t(msg => msg.dict.button.add)}
                     </ElButton>
                     <ElButton type="primary" icon={<DocumentCopy />}>
                         {t(msg => msg.dict.button.import)}
                         <input
-                            ref={fileInputRef}
+                            ref={fileInput}
                             type="file"
                             accept='.json'
                             style={{ display: "none" }}
-                            onChange={() => handleFileSelected(fileInputRef.value, tableRef.value)}
+                            onChange={() => handleFileSelected(fileInput.value, table.value)}
                         />
                     </ElButton>
-                    {
-                        locale === "zh_CN" && <ElLink icon={<Edit />} href={FEEDBACK_LINK}>{t(msg => msg.dict.button.feedback)}</ElLink>
-                    }
+                    <ElLink
+                        v-show={locale === "zh_CN"}
+                        icon={<Edit />}
+                        href={FEEDBACK_LINK}
+                    >
+                        {t(msg => msg.dict.button.feedback)}
+                    </ElLink>
                 </ElSpace>
             </div>
-            <ListTable ref={tableRef} onEdit={row => editRef.value?.edit?.(row)} />
-            <DictEdit ref={editRef} onSave={() => tableRef.value?.query?.()} />
+            <ListTable ref={table} onEdit={row => edit.value?.edit?.(row)} />
+            <DictEdit ref={edit} onSave={() => table.value?.query?.()} />
         </div>
     )
 })

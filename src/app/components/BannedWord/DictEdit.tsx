@@ -15,6 +15,11 @@ async function save(data: XGFLFG.Dictionary): Promise<boolean> {
     return true
 }
 
+export type EditInstance = {
+    add: () => void
+    edit: (row: XGFLFG.Dictionary) => void
+}
+
 const _default = defineComponent({
     emits: {
         save: (_name: string, _remark: string) => true
@@ -32,10 +37,11 @@ const _default = defineComponent({
             formRemark.value = row?.remark || ''
             open.value = true
         }
-        ctx.expose({
+        const instance: EditInstance = {
             add: () => init(msg => msg.dict.button.add),
             edit: (row: XGFLFG.Dictionary) => init(msg => msg.dict.button.edit, row)
-        })
+        }
+        ctx.expose(instance)
         const handleSave = async () => {
             const name = formName.value
             const remark = formName.value
