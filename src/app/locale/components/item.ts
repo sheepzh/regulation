@@ -18,6 +18,7 @@ export type ItemMessage = {
         original: string
         mask: string
     }
+    priority: string
 }
 
 const _default: Messages<ItemMessage> = {
@@ -40,8 +41,9 @@ const _default: Messages<ItemMessage> = {
         words: '违禁词',
         word: {
             original: '敏感词',
-            mask: '安全词'
-        }
+            mask: '安全词',
+        },
+        priority: "优先级",
     },
     en: {
         name: 'Name',
@@ -63,7 +65,8 @@ const _default: Messages<ItemMessage> = {
         word: {
             original: 'Original word',
             mask: 'Replaced word'
-        }
+        },
+        priority: "Priority",
     }
 }
 

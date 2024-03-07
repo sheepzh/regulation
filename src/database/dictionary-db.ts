@@ -10,7 +10,6 @@ const keyOf = (id: number) => KEY + id.toString()
  * @since 0.0.1
  */
 export default class DictionaryDb extends BaseDb {
-
     private async getCurrentId(): Promise<number> {
         const data: any = await this.storage.get(ID_KEY)
         const before = data[ID_KEY]
@@ -28,8 +27,17 @@ export default class DictionaryDb extends BaseDb {
     async getById(id: number): Promise<XGFLFG.Dictionary> {
         const key = keyOf(id)
         const data = await this.storage.get(key)
-        const row = data[key]
-        return row ? row as XGFLFG.Dictionary : Promise.reject(new Error('Not found'))
+        const row = data[key] as XGFLFG.Dictionary
+        if (!row) throw new Error('Not found')
+        return this.compatibleElderFormat(row)
+    }
+
+    private compatibleElderFormat(dict: XGFLFG.Dictionary): XGFLFG.Dictionary {
+        if (!dict) return dict
+        if (typeof dict.words === "object" && !Array.isArray(dict.words)) {
+            dict.words = Object.values(dict.words)
+        }
+        return dict
     }
 
     /**
@@ -42,6 +50,7 @@ export default class DictionaryDb extends BaseDb {
         return Object.entries(allData)
             .filter(([key]) => key.startsWith(KEY) && key !== ID_KEY)
             .map(([_key, value]) => value as XGFLFG.Dictionary)
+            .map(dict => this.compatibleElderFormat(dict))
     }
 
     /**
@@ -54,7 +63,7 @@ export default class DictionaryDb extends BaseDb {
         const key = keyOf(id)
         toAdd.id = id
         toAdd.enabled = true
-        toAdd.words = {}
+        toAdd.words = []
         await this.setByKey(key, toAdd)
         await this.updateId(id)
     }
@@ -104,5 +113,12 @@ export default class DictionaryDb extends BaseDb {
             return
         }
         await this.setByKey(keyOf(id), dict)
+    }
+
+    async updateAll(dicts: XGFLFG.Dictionary[]): Promise<void> {
+        if (!dicts?.length) return
+        for (const dict of dicts) {
+            await this.update(dict)
+        }
     }
 }

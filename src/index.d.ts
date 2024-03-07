@@ -11,6 +11,10 @@ declare namespace XGFLFG {
      */
     type BannedWord = {
         /**
+         * @since 1.0.0
+         */
+        priority: number
+        /**
          * The origin word which is expected to be banned
          */
         origin: string
@@ -46,11 +50,11 @@ declare namespace XGFLFG {
         remark: string
         enabled?: boolean
         /**
-         * Unused temporarily 
+         * @since 1.0.0
          */
-        priority?: number
+        priority: number
         scopes?: Scopes
-        words: BannedWords
+        words: BannedWord[]
     }
 
     /**

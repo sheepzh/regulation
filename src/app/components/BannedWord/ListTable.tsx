@@ -1,14 +1,15 @@
-import { ElTable, ElTableColumn, ElSwitch, ElButton, ElTag, ElMessageBox, ElMessage, ElDialog, ElTooltip } from 'element-plus'
-import { defineComponent, ref } from 'vue'
+import { ElTable, ElTableColumn, ElSwitch, ElButton, ElTag, ElMessageBox, ElMessage, ElDialog, ElTooltip, ElSpace } from 'element-plus'
+import { defineComponent, ref, watch } from 'vue'
 import Word from './Word'
 import Scope from './Scope'
-import DictionaryDb from '@db/dictionary-db'
 import ScopeList from './Scope/ScopeList'
 import { nonreactive } from '@common/vue3-extent'
 import { saveJSON } from "@util/file-util"
 import { t } from '@app/locale'
+import { Top, Bottom } from '@element-plus/icons-vue'
+import { DictionaryService } from '@service/dictionary-service'
 
-const db: DictionaryDb = new DictionaryDb(chrome.storage.local)
+const service: DictionaryService = new DictionaryService(chrome.storage.local)
 
 export type TableInstance = {
     query: () => void
@@ -23,6 +24,17 @@ const renderOperationButton = (
 
 const formatLength = (row: XGFLFG.Dictionary) => `${Object.values(row.words).length || 0}`
 
+const doShift = (list: XGFLFG.Dictionary[], idx: number, topOrDown: boolean): XGFLFG.Dictionary[] => {
+    if (!list?.length) return []
+    const copy = [...list]
+    const targetIdx = idx + (topOrDown ? -1 : 1)
+    if (!Object.hasOwn(list, targetIdx)) return copy
+    const temp = copy[idx]
+    copy[idx] = copy[targetIdx]
+    copy[targetIdx] = temp
+    return copy
+}
+
 export default defineComponent({
     emits: {
         edit: (_row: XGFLFG.Dictionary) => true
@@ -33,10 +45,20 @@ export default defineComponent({
         const wordOpen = ref(false)
         const scopeOpen = ref(false)
 
-        const query = () => db.listAll().then(val => list.value = val)
+        const query = async () => {
+            const dicts = await service.listAllDicts()
+            list.value = dicts
+            console.log(dicts)
+        }
         query()
         const instance: TableInstance = { query }
         ctx.expose(instance)
+
+        const handleShift = async (idx: number, topOrDown: boolean) => {
+            const newList = doShift(list.value, idx, topOrDown)
+            await service.saveAll(newList)
+            query()
+        }
 
         return () => (
             <div style={{ width: "100%", marginTop: "20px" }}>
@@ -69,8 +91,18 @@ export default defineComponent({
                             const id = row.id
                             return <ElSwitch
                                 modelValue={row?.enabled}
-                                onChange={(val: boolean) => id && db.updateEnabled(id, val).then(() => row.enabled = val)}
+                                onChange={(val: boolean) => id && service.updateEnabled(id, val).then(() => row.enabled = val)}
                             />
+                        }}
+                    </ElTableColumn>
+                    <ElTableColumn align='center' minWidth={30} label={t(msg => msg.item.priority)}>
+                        {({ row, $index }: { row: XGFLFG.Dictionary, $index: number }) => {
+                            const isFirst = $index === 0
+                            const isLast = $index === (list.value?.length ?? 0) - 1
+                            return <ElSpace>
+                                <ElButton icon={<Top />} circle disabled={isFirst} onClick={() => handleShift($index, true)} />
+                                <ElButton icon={<Bottom />} circle disabled={isLast} onClick={() => handleShift($index, false)} />
+                            </ElSpace>
                         }}
                     </ElTableColumn>
                     <ElTableColumn align='center' minWidth={70} label={t(msg => msg.item.operation)}>
@@ -99,7 +131,7 @@ export default defineComponent({
                                             type: 'warning'
                                         }
                                     )
-                                        .then(() => db.delete(row.id || 0))
+                                        .then(() => service.deleteById(row.id || 0))
                                         .then(() => {
                                             ElMessage.success(t(msg => msg.dict.msg.deletedSuccessfully))
                                             query()

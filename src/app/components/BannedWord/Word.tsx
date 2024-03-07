@@ -1,4 +1,4 @@
-import { PropType, defineComponent, ref } from 'vue'
+import { PropType, StyleValue, defineComponent, ref } from 'vue'
 import { ElButton, ElInput, ElMessage, ElMessageBox, ElTag } from 'element-plus'
 import { getRealMask } from '@common/default-word'
 import './style/word'
@@ -7,6 +7,11 @@ import { t } from '@app/locale'
 import { Plus, Close, Check } from "@element-plus/icons-vue"
 
 const db = new BannedWordDb(chrome.storage.local)
+const CONTAINER_STYLE: StyleValue = {
+    display: "flex",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+}
 
 export default defineComponent({
     props: {
@@ -16,6 +21,7 @@ export default defineComponent({
         const dict = ref<XGFLFG.Dictionary>(prop.dict)
         const editing = ref(false)
         const editingOrigin = ref('')
+        const originInput = ref<HTMLInputElement>()
         const editingMask = ref('')
         const handleDelete = async (origin: string) => {
             const newVal = dict.value
@@ -40,6 +46,7 @@ export default defineComponent({
                 words[origin] = current
                 await db.update(dictVal)
                 editingMask.value = editingOrigin.value = ''
+                originInput.value?.focus?.()
             }
 
             const existing = words[origin]
@@ -57,7 +64,7 @@ export default defineComponent({
             }
         }
 
-        return () => <div style={{ display: "flex" }}>
+        return () => <div style={CONTAINER_STYLE}>
             {
                 Object.values(dict.value?.words || {}).map(({ origin, mask }) => {
                     return <ElTag
@@ -70,9 +77,10 @@ export default defineComponent({
                     </ElTag>
                 })
             }
-            <div v-show={editing.value} style={{ display: "inline-flex" }}>
+            <div v-show={editing.value} style={{ "margin-right": "auto" }}>
                 <ElInput
                     modelValue={editingOrigin.value}
+                    ref={originInput}
                     placeholder={t(msg => msg.item.word.original)}
                     clearable
                     size='small'
@@ -102,7 +110,7 @@ export default defineComponent({
                 v-show={!editing.value}
                 icon={<Plus />}
                 size='small'
-                style={{ height: "28px" }}
+                style={{ height: "28px", "margin-right": "auto" }}
                 onClick={showInput}
             >
                 {t(msg => msg.dict.button.add)}
