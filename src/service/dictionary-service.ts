@@ -1,7 +1,13 @@
 import { matchScope } from '../common/matcher'
 import DictionaryDb from '../database/dictionary-db'
 
-export class DictionaryService {
+const keyOfScope = (scope: XGFLFG.Scope) => {
+    if (!scope) return undefined
+    const { type, pattern } = scope
+    return type + pattern
+}
+
+class DictionaryService {
     db: DictionaryDb
 
     constructor(storage: chrome.storage.StorageArea) {
@@ -15,15 +21,7 @@ export class DictionaryService {
                 // No domain, means all
                 if (!dict.scopes) return true
                 const scopes = Object.values(dict.scopes)
-                if (!scopes.length) return true
-
-                for (const key in scopes) {
-                    const scope = scopes[key] as XGFLFG.Scope
-                    if (matchScope(scope, host, href)) {
-                        return true
-                    }
-                }
-                return false
+                return scopes?.some?.(scope => matchScope(scope, host, href))
             })
         const result: XGFLFG.BannedWord[] = []
         const exists = new Set()
@@ -75,4 +73,54 @@ export class DictionaryService {
         toAdd.priority = beforePriority + 1
         await this.db.add(toAdd)
     }
+
+    async saveScope(id: number, scope: XGFLFG.Scope): Promise<XGFLFG.Scopes> {
+        const dict = await this.db.getById(id)
+        if (!dict) return
+        if (!dict.scopes) dict.scopes = {}
+        dict.scopes[keyOfScope(scope)] = scope
+        await this.db.update(dict)
+        return dict.scopes
+    }
+
+    async removeScope(id: number, scope: XGFLFG.Scope): Promise<XGFLFG.Scopes> {
+        const dict = await this.db.getById(id)
+        if (!dict) return
+        if (!dict.scopes) return {}
+        delete dict.scopes[keyOfScope(scope)]
+        await this.db.update(dict)
+        return dict.scopes
+    }
+
+    getById(id: number): Promise<XGFLFG.Dictionary> {
+        return this.db.getById(id)
+    }
+
+    async deleteWord(id: number, origin: string): Promise<XGFLFG.BannedWord[]> {
+        const dict = await this.db.getById(id)
+        if (!dict) return
+        dict.words = (dict.words || []).filter(w => w.origin !== origin)
+        await this.db.update(dict)
+        return dict.words
+    }
+
+    async saveWord(id: number, origin: string, mask: string): Promise<XGFLFG.BannedWord[]> {
+        const dict = await this.db.getById(id)
+        if (!dict) return
+        const words = dict.words || []
+        const exist = words.find(w => w.origin === origin)
+        if (exist) {
+            exist.mask = mask
+            dict.words = words
+        } else {
+            words.push({ mask, origin, priority: words?.length ?? 0 })
+        }
+        dict.words = words
+        await this.db.update(dict)
+        return words
+    }
 }
+
+const dictionaryService = new DictionaryService(chrome.storage.local)
+
+export default dictionaryService

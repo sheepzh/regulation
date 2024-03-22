@@ -3,13 +3,13 @@ import { ElButton, ElDialog, ElInput, ElMessage } from 'element-plus'
 import './style/dict-add'
 import { I18nKey, t } from '@app/locale'
 import { Close, Check } from "@element-plus/icons-vue"
-import { DictionaryService } from '@service/dictionary-service'
-
-const service: DictionaryService = new DictionaryService(chrome.storage.local)
+import dictionaryService from '@service/dictionary-service'
 
 async function save(data: XGFLFG.Dictionary): Promise<boolean> {
     // Update if ID exists, or add it
-    const toDo: (dict: XGFLFG.Dictionary) => Promise<void> = data.id ? data => service.save(data) : data => service.add(data)
+    const toDo: (dict: XGFLFG.Dictionary) => Promise<void> = data.id
+        ? data => dictionaryService.save(data)
+        : data => dictionaryService.add(data)
     await toDo(data)
     ElMessage.success(t(msg => msg.dict.msg.savedSuccessfully))
     return true

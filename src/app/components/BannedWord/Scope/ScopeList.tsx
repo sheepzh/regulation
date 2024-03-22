@@ -1,31 +1,33 @@
 import { ElTag, ElTooltip } from 'element-plus'
 import { PropType, defineComponent } from 'vue'
 import { t } from '@app/locale'
+import { useShadow } from '@app/hooks/useShadow'
 
 export default defineComponent({
     props: {
         scopes: {
             type: Object as PropType<XGFLFG.Scopes>,
-            required: true
+            required: false
         },
         tooltipEffect: String as PropType<"dark" | "light">,
         closable: Boolean,
     },
     emits: {
-        delete: (_key: string) => true
+        delete: (_scope: XGFLFG.Scope) => true
     },
-    setup({ scopes = {}, tooltipEffect = "dark", closable = false }, ctx) {
+    setup(props, ctx) {
+        const scopes = useShadow(() => props.scopes)
         return () => (
             <div>
-                {Object.entries(scopes).map(([key, scope]) => {
+                {Object.values(scopes.value || {}).map(scope => {
                     return <ElTooltip
                         content={`${t(msg => msg.item.scopeType[scope.type])}${scope.useReg ? t(msg => msg.item.useRegSuffix) : ''}`}
                         placement='bottom'
-                        effect={tooltipEffect}
+                        effect={props.tooltipEffect}
                     >
                         <ElTag
-                            closable={closable}
-                            onClose={() => ctx.emit("delete", key)}
+                            closable={props.closable}
+                            onClose={() => ctx.emit("delete", scope)}
                             style={{ marginRight: "6px", marginBottom: "6px" }}
                             type={scope.useReg ? "warning" : null}
                         >

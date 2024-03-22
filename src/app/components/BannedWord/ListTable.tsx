@@ -1,5 +1,5 @@
 import { ElTable, ElTableColumn, ElSwitch, ElButton, ElTag, ElMessageBox, ElMessage, ElDialog, ElTooltip, ElSpace } from 'element-plus'
-import { defineComponent, ref, watch } from 'vue'
+import { defineComponent, ref } from 'vue'
 import Word from './Word'
 import Scope from './Scope'
 import ScopeList from './Scope/ScopeList'
@@ -7,9 +7,7 @@ import { nonreactive } from '@common/vue3-extent'
 import { saveJSON } from "@util/file-util"
 import { t } from '@app/locale'
 import { Top, Bottom } from '@element-plus/icons-vue'
-import { DictionaryService } from '@service/dictionary-service'
-
-const service: DictionaryService = new DictionaryService(chrome.storage.local)
+import dictionaryService from '@service/dictionary-service'
 
 export type TableInstance = {
     query: () => void
@@ -46,7 +44,7 @@ export default defineComponent({
         const scopeOpen = ref(false)
 
         const query = async () => {
-            const dicts = await service.listAllDicts()
+            const dicts = await dictionaryService.listAllDicts()
             list.value = dicts
             console.log(dicts)
         }
@@ -56,7 +54,7 @@ export default defineComponent({
 
         const handleShift = async (idx: number, topOrDown: boolean) => {
             const newList = doShift(list.value, idx, topOrDown)
-            await service.saveAll(newList)
+            await dictionaryService.saveAll(newList)
             query()
         }
 
@@ -79,8 +77,8 @@ export default defineComponent({
                                     placement='top'
                                     effect='light'
                                     v-slots={{
-                                        default: tag,
-                                        content: <ScopeList scopes={row.scopes || {}} tooltipEffect="light" />
+                                        default: () => tag,
+                                        content: () => <ScopeList scopes={row.scopes || {}} tooltipEffect="light" />
                                     }}
                                 />
                         }}
@@ -91,7 +89,7 @@ export default defineComponent({
                             const id = row.id
                             return <ElSwitch
                                 modelValue={row?.enabled}
-                                onChange={(val: boolean) => id && service.updateEnabled(id, val).then(() => row.enabled = val)}
+                                onChange={(val: boolean) => id && dictionaryService.updateEnabled(id, val).then(() => row.enabled = val)}
                             />
                         }}
                     </ElTableColumn>
@@ -131,7 +129,7 @@ export default defineComponent({
                                             type: 'warning'
                                         }
                                     )
-                                        .then(() => service.deleteById(row.id || 0))
+                                        .then(() => dictionaryService.deleteById(row.id || 0))
                                         .then(() => {
                                             ElMessage.success(t(msg => msg.dict.msg.deletedSuccessfully))
                                             query()
@@ -151,12 +149,13 @@ export default defineComponent({
                 {
                     current.value && <>
                         <ElDialog
+                            class="scope-dialog"
                             title={`${t(msg => msg.item.scope)} - ${current.value.name}`}
                             modelValue={scopeOpen.value}
                             destroyOnClose
                             onClosed={() => scopeOpen.value = false}
                         >
-                            <Scope dict={current.value} />
+                            <Scope dictId={current.value?.id} value={current.value?.scopes} />
                         </ElDialog>
                         <ElDialog
                             title={`${t(msg => msg.item.words)} - ${current.value?.name}`}
@@ -164,7 +163,7 @@ export default defineComponent({
                             destroyOnClose
                             onClosed={() => wordOpen.value = false}
                         >
-                            <Word dict={current.value} />
+                            <Word dictId={current.value?.id} value={current.value?.words} />
                         </ElDialog>
                     </>
                 }

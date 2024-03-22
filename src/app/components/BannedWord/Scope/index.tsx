@@ -1,38 +1,39 @@
-import { PropType, defineComponent, ref } from 'vue'
+import { PropType, defineComponent, watch } from 'vue'
 import ScopeTest from './ScopeTest'
 import ScopeAdd from './ScopeAdd'
 import ScopeList from './ScopeList'
 import '../style/scope'
 import { ElMessage, ElSpace } from 'element-plus'
-import DictionaryDb from '@db/dictionary-db'
 import { t } from '@app/locale'
-
-const db: DictionaryDb = new DictionaryDb(chrome.storage.local)
+import dictionaryService from '@service/dictionary-service'
+import { useShadow } from '@app/hooks/useShadow'
 
 export default defineComponent({
     props: {
-        dict: Object as PropType<XGFLFG.Dictionary>
+        dictId: Number,
+        value: Object as PropType<XGFLFG.Scopes>
     },
-    setup({ dict }) {
-        const myDict = ref(dict)
+    emit: {
+        change: (_dictId: number, _scopes: XGFLFG.Scopes) => true
+    },
+    setup(props, ctx) {
+        const dictId = useShadow(() => props.dictId)
+        const scopes = useShadow(() => props.value)
+        watch(scopes, () => ctx.emit("change", dictId.value, scopes.value))
+
         const handleScopeSave = async (scope: XGFLFG.Scope) => {
-            const val = { ...myDict.value || {} }
-            !val.scopes && (val.scopes = {})
-            val.scopes[scope.type + scope.pattern] = scope
-            await db.update(val as XGFLFG.Dictionary)
+            scopes.value = await dictionaryService.saveScope(dictId.value, scope)
             ElMessage.success(t(msg => msg.dict.msg.savedSuccessfully))
         }
-        const handleScopeDelete = async (key: string) => {
-            const val = { ...myDict.value || {} }
-            delete val?.scopes?.[key]
-            await db.update(val as XGFLFG.Dictionary)
+        const handleScopeDelete = async (scope: XGFLFG.Scope) => {
+            scopes.value = await dictionaryService.removeScope(dictId.value, scope)
         }
         return () => (
             <ElSpace direction='vertical' style={{ width: "100%" }}>
-                <ScopeTest scopes={dict?.scopes} />
+                <ScopeTest scopes={scopes.value} />
                 <ScopeAdd onSave={handleScopeSave} />
                 <div style={{ height: "15px", width: "100%" }} />
-                <ScopeList scopes={dict.scopes} closable onDelete={handleScopeDelete} />
+                <ScopeList scopes={scopes.value} closable onDelete={handleScopeDelete} />
             </ElSpace>
         )
     }

@@ -25,8 +25,6 @@ declare namespace XGFLFG {
         mask: string
     }
 
-    type BannedWords = { [key: string]: BannedWord }
-
     type BannedWordUseReg = {
         /**
          * The origin word which is expected to be banned

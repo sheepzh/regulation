@@ -3,9 +3,7 @@ import Context from './resolver/context'
 import filter from './resolver/filter'
 import Replacer from './resolver/replacer'
 import generateSwitcher from './resolver/switcher'
-import { DictionaryService } from '../service/dictionary-service'
-
-const service = new DictionaryService(chrome.storage.local)
+import dictionaryService from '../service/dictionary-service'
 
 const settingDb = new SettingDb(chrome.storage.local)
 
@@ -38,7 +36,7 @@ async function main() {
         return
     }
 
-    const originWords: XGFLFG.BannedWord[] = await service.listWords(host, href)
+    const originWords: XGFLFG.BannedWord[] = await dictionaryService.listWords(host, href)
     if (!originWords?.length) {
         return
     }

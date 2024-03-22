@@ -10,7 +10,6 @@
 .scope-input {
   .el-input-group__prepend {
     background-color: #fff;
-    width: 60px;
   }
 }
 
@@ -19,4 +18,21 @@
   padding-right: 0px !important;
   text-align: center !important;
   width: 50px !important;
+}
+
+.scope-dialog {
+  .el-input-group__append {
+    padding: 0 5px;
+    .el-button {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 0;
+      padding: 0 7px;
+    }
+  }
+  .el-row {
+    display: flex;
+    align-items: center;
+  }
 }

@@ -1,5 +1,5 @@
 import { ElButton, ElInput, ElOption, ElRow, ElSelect, ElSwitch, ElTooltip, ElCol, ElMessage } from 'element-plus'
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, watch } from 'vue'
 import clipboardy from 'clipboardy'
 import { t } from '@app/locale'
 import { Plus, DocumentCopy } from '@element-plus/icons-vue'
@@ -13,6 +13,8 @@ export default defineComponent({
         const useReg = ref(false)
         const type = ref<XGFLFG.ScopeType>('host')
         const inputRef = ref<HTMLInputElement>()
+
+        watch(type, newVal => newVal === "url" && (useReg.value = true))
 
         const setPattern = (val?: string) => pattern.value = val?.trim?.()
 
@@ -57,7 +59,11 @@ export default defineComponent({
                     onClear={() => setPattern()}
                     v-slots={{
                         prepend: () => (
-                            <ElSelect modelValue={type.value} onChange={(val: XGFLFG.ScopeType) => useReg.value = val === "url"}>
+                            <ElSelect
+                                modelValue={type.value}
+                                onChange={(val: XGFLFG.ScopeType) => type.value = val}
+                                style={{ width: "120px" }}
+                            >
                                 <ElOption label={t(msg => msg.item.scopeType.url)} value="url" />
                                 <ElOption label={t(msg => msg.item.scopeType.host)} value="host" />
                             </ElSelect>

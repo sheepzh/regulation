@@ -9,6 +9,7 @@ firefox_dev
 package-lock.json
 
 market_packages
+xxx
 
 *.crx
 *.pem

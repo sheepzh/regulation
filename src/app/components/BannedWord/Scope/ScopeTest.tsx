@@ -7,6 +7,7 @@ import { matchScope } from "@common/matcher"
 import Url from 'url-parse'
 import { t } from "@app/locale"
 import { Search, DocumentCopy } from "@element-plus/icons-vue"
+import { useShadow } from "@app/hooks/useShadow"
 
 const url2Host = (urlStr: string) => {
     const url = Url(urlStr)
@@ -50,7 +51,7 @@ const _default = defineComponent({
     },
     setup: (props: Props) => {
         const url = ref<string>()
-        const scopes = ref<XGFLFG.Scopes>(props.scopes || {})
+        const scopes = useShadow(() => props.scopes, {})
         const testResult = ref<TestResult>(NO_MSG_RESULT())
 
         const setUrl = (val?: string) => url.value = val?.trim?.() || ''
